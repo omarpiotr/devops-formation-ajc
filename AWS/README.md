@@ -255,7 +255,9 @@ docker run -p 8082:8069 --name odoo -e HOST=10.0.1.177 -e PORT=5432 -e USER=odoo
 * VPC → Tableau du bord VPC → sous-réseaux :
     * Créer un sous réseau dans une zone de disponibilité différente
         * omarpiotr-public-subnet2b
+
 ![Capture113](./assets/Capture_AWS_113.JPG "Capture113")
+
 * VPC → Tableau du bord VPC → Tables de routage :
     * principale (non), celle qui a une igw → Association de sous-réseau → Modifier les  associations de sous-réseau : cocher/rajouter le nouveau sous réseau public
     
