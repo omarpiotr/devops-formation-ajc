@@ -314,7 +314,7 @@ EC2 → Equilibrage de charge → Equilibreurs de charge → Créer un équilibr
 
 # TP 10 Autoscaling Scaling Group (ASG)
 ## Résumé / principe
----
+
 * Evolutive en cas de montée en charge → créer une instance supplémentaire
 * Créer une configuration de lancement (spécifier les paramètres à AWS pour créer d'autres instances) : Template
     * AMI
@@ -323,12 +323,12 @@ EC2 → Equilibrage de charge → Equilibreurs de charge → Créer un équilibr
     * Ressources à créer: Nbre de ressoures minimal / Nbre de ressources souhaité / Nbr de ressources Max
     * Politique de suivi (optionnel) : sur CPU (70% dt alors créer new instance) / sur Traffic
 ## Vocabulaire:
----
+
 * Scaling In : récupère la ressources précédement créée
 * Scaling Out : Créer une nouvelle ressource
 
 ## TP
----
+
 
 ### Création d'une Image :
 * Créer une instance EC2
@@ -414,7 +414,7 @@ EC2 → Equilibrage de charge → Equilibreurs de charge → Créer un équilibr
 # TP 12 Elastic Contenaire Service (ECS)
 
 ## Création d'un cluster (par le formateur)
----
+
 [ ECS ] → Cluster
 * on va TOUS utiliser le mm cluster
 * Créer un cluster
@@ -426,7 +426,7 @@ EC2 → Equilibrage de charge → Equilibreurs de charge → Créer un équilibr
     * Taches → Exéctuer une taches (spécifier les contneur)
 
 ## Création d'une tache
----
+
 [ ECS ] → Définition de taches → Créer une définition de Tache
 * FARGATE
 * Nom : omar-bdd-odoo
@@ -483,7 +483,7 @@ Cliquer sur la tache pour avoir
 ![Capture215](./assets/Capture_AWS_215.JPG "Capture215")
 
 ## Création d'un EC2 avec un conteneur docker et odoo qui communiquera avec la db postgres
----
+
 [ EC2 ] → Instances → Créer une instance sur laquelle il faut déployer un conteneur odoo
 ```bash
 #!/bin/bash
@@ -495,7 +495,7 @@ sudo docker run -p 8082:8069 --name odoo -e HOST=172.31.18.63 -e PORT=5432 -e US
 
 # TP 13 : code Commit
 ## codeCommit
----
+
 [ CodeCommit ] → Créer un référentiel<br>
 ![Capture217](./assets/Capture_AWS_217.JPG "Capture217")
 * URL du clone
@@ -504,7 +504,7 @@ sudo docker run -p 8082:8069 --name odoo -e HOST=172.31.18.63 -e PORT=5432 -e US
 
 
 ## IAM pour récupérer les droits utilisateur et spécifier la clé
----
+
 [ IAM ] → utilisateurs → Capge → Informations d'identification de sécurité
 * Clé SSH pour Code Commit 
     * Télécharge clé publique SSH
@@ -515,7 +515,7 @@ sudo docker run -p 8082:8069 --name odoo -e HOST=172.31.18.63 -e PORT=5432 -e US
 
 
 ## Sur notre machine cloner le projet et faire un commit
----
+
 ```bash
 git clone https://git-codecommit.us-east-1.amazonaws.com/v1/repos/omar-youtube-lab
 # Copie le contenue https://github.com/sadofrazer/youtube-lab-example
@@ -528,11 +528,11 @@ git push origin master
 
 # TP 14 : service code build
 ## Créer et récupérer un token depuis DockerHub
----
+
 Account Settings → Secrity → Access Tokens → New Access Token
 
 ## Sauvegardé le Token de DockerHub dans un Secret
----
+
 [ Secrete manager ] → Secrets  → Stocker un nouveau secret : omarpiotr_dockerhub_login
 ![Capture225](./assets/Capture_AWS_225.JPG "Capture225")<br>
 ![Capture226](./assets/Capture_AWS_226.JPG "Capture226")<br>
@@ -541,7 +541,7 @@ Suivant → Suivant → Stocker<br>
 * Récupérer ARN, on l'utilisera par la suite pour créer la statégie
 
 ## Ajouter le fichier BuildSpec: 
----
+
 [ CodeCommit ] → Référentiels → omar-youtube-lab 
 * Ajouter le fichier suivant : buildspec.yml
 ```yml
@@ -584,7 +584,7 @@ phases:
 ![Capture227](./assets/Capture_AWS_227.JPG "Capture227")
 
 ## Créer un projet de génération
----
+
 [ CodeBuild ] →  Créer un projet de génération : omar-build-youtube-lab<br>
 
 ![Capture223](./assets/Capture_AWS_223.JPG "Capture223")<br>
@@ -601,7 +601,7 @@ phases:
 * La génération de notre build va échoué car on a pas les privilèges
 
 ## Ajouter les privilège car on a pas les droits
----
+
 [ IAM ] → ROLE → selectionner notre role : codebuild-omar-build-youtube-lab-service-role<br>
 [ IAM ] → Créer une stratégie
 * Choisir un service: secret manager
@@ -619,11 +619,11 @@ phases:
 ![Capture234](./assets/Capture_AWS_234.JPG "Capture234")<br>
 
 ## On rebuild notre code à nouveau
----
+
 [ CodeBuild ] → Projet de génération → OK <br>
 
 ## Mise en place d'un Pipline CI (automatique)
----
+
 [ CodeBuild ] → Pipeline → créer un pipeline → créer un nouveau role<br>
 
 ![Capture237](./assets/Capture_AWS_237.JPG "Capture237")<br>
