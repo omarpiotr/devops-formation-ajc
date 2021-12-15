@@ -98,9 +98,9 @@ docker exec -it jenkins-frazer_jenkins_1 /bin/bash
 ## Installer le plugin http_request
 ---
 * Administrer jenkins → Plugins → plugin disponible
-    * http_request → selectionner → install withhout restard
+    * http_request → selectionner → install withhout restart
 
-## Configuutiliser le plugin dans notre projet
+## Configurer/Utiliser le plugin dans notre projet
 ---
 * Tableau de bord → projet → configurer
 * ajouter  HTTP Request
@@ -148,7 +148,7 @@ Administrer Jenkins → Manage credential → portée global → ajouter des ind
 
 ## Utiliser le plugin docker pour tagger et pusher
 ---
-* Supprimer  cette étapes
+* Supprimer  cette étape
     ```sh
     #!/bin/bash
     docker login -u $USERNAME -p $PASSWORD
