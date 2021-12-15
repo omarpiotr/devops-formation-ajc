@@ -39,12 +39,12 @@ docker exec -it jenkins-frazer_jenkins_1 /bin/bash
 # TP 2 : Interface de Jenkins
 
 ## Forker et cloner le projet
----
+
 * forker le projet sur notre repos Git : https://github.com/heroku/alpinehelloworld
 * Cloner le repos sur notre machine locale : git clone git@github.com:omarpiotr/alpinehelloworld.git
 
 ## Premier Projet Freestyle sur Jenkins
----
+
 [ Jenkins ] : http://54.90.47.28:8080/
 * Nouveau projet de type freestyle : ajc-alpinehelloword
 * Description Webbapp
@@ -96,19 +96,19 @@ docker exec -it jenkins-frazer_jenkins_1 /bin/bash
     ```
 # TP 3 : Tests d'acceptances
 ## Installer le plugin http_request
----
+
 * Administrer jenkins → Plugins → plugin disponible
     * http_request → selectionner → install withhout restart
 
 ## Configurer/Utiliser le plugin dans notre projet
----
+
 * Tableau de bord → projet → configurer
 * ajouter  HTTP Request
     * url : http://localhost:5000
     * Avancé → Response → Response codes expected : 200
 
 ## Installer et configurer docker-build-step 
----
+
 * Administrer Jenkins → Plugin → Installer docker-build-step
 * Administrer Jenkins → Configurer le system
     * administrer → configurer → Docker Builder :
@@ -119,7 +119,7 @@ docker exec -it jenkins-frazer_jenkins_1 /bin/bash
 ![Capture_JENKINS_101.JPG](./assets/Capture_JENKINS_101.JPG)
 
 ## Utiliser le plugin docker-build-step dans notre projet
----
+
 * On va remplacer les commandes précédentes dans le script par le plugin par des commandes Docker :
 ```sh
 # a supprimer
@@ -136,7 +136,7 @@ docker rmi $IMAGE_NAME:$IMAGE_TAG
 # TP4 : Artefacts et Credentials
 
 ## Crédentials
----
+
 Administrer Jenkins → Manage credential → portée global → ajouter des indentifiant
 * Nom utilisateur et MDP
 * Global
@@ -147,7 +147,7 @@ Administrer Jenkins → Manage credential → portée global → ajouter des ind
 ![Capture_JENKINS_104.JPG](./assets/Capture_JENKINS_104.JPG)
 
 ## Utiliser le plugin docker pour tagger et pusher
----
+
 * Supprimer  cette étape
     ```sh
     #!/bin/bash
@@ -164,7 +164,7 @@ Administrer Jenkins → Manage credential → portée global → ajouter des ind
 # TP5 : PROJET DE TYPE : PIPLINE (as code)
 
 ## Rajouter 2 crédentials:
----
+
 * Administrer Jenkins → Manage Credentials → Global → Add Credential
     * Portée : Global
     * Type : Secret text
@@ -179,11 +179,11 @@ Administrer Jenkins → Manage credential → portée global → ajouter des ind
 ![Capture_JENKINS_107.JPG](./assets/Capture_JENKINS_107.JPG)
 
 ## Installer le pugin : GitHub Integration
----
+
 Administrer Jenkins → Plugin → Installer GitHub Integration 
 
 ## Créer un Pipline de déploiement sur Heroku
----
+
 * Ajouter le fichier Jenkinsfile dans le projet
 ```Groovy
 pipeline {
@@ -310,7 +310,7 @@ pipeline {
 * Lancer notre build
 
 ## Webhook Trigger : Relier GitHub a notre Jenkis
----
+
 [ GitHub ] : Projet → Settings → add webhook
 * Set URL de Jenkins: http://54.90.47.28:8080/github-webhook/
 
