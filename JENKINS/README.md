@@ -180,7 +180,7 @@ Administrer Jenkins → Manage credential → portée global → ajouter des ind
 
 ## Installer le pugin : GitHub Integration
 ---
-Installer le plugin 
+Administrer Jenkins → Plugin → Installer GitHub Integration 
 
 ## Créer un Pipline de déploiement sur Heroku
 ---
