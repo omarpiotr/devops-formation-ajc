@@ -422,7 +422,9 @@ post {
     ```
     * Fournir à Jenkins clé privé afin qu'il puisse accéder à l'agent
 * [ Jenkins ] → Administrer Jenkins → gérer les noeuds → créer un noeud
+
 ![Capture_JENKINS_211.JPG](./assets/Capture_JENKINS_211.JPG)
+
 ```Groovy
 ...
 
