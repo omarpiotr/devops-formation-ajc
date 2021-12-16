@@ -161,7 +161,7 @@ Administrer Jenkins → Manage credential → portée global → ajouter des ind
 ![Capture_JENKINS_105.JPG](./assets/Capture_JENKINS_105.JPG)
 
 
-# TP5 : PROJET DE TYPE PIPLINE (as code)
+# TP5/6/7 : PROJET DE TYPE PIPLINE (as code)
 
 ## Rajouter 2 crédentials:
 
@@ -341,3 +341,58 @@ pipeline {
         * GitHub : OK
 
         ![Capture_JENKINS_202.JPG](./assets/Capture_JENKINS_202.JPG)
+
+
+# TP8 : Shared Library avec Slack
+
+## Slack
+* Créer un compte slack
+* Créer un workSpace AJC-JENKINS
+* ajouter un nouveau canal : ajc-alpinehelloworld
+* ajouter une application : Jenkins CI
+* Récupérer les information :
+
+![Capture_JENKINS_205.JPG](./assets/Capture_JENKINS_210.JPG)
+
+## Configuration sur Jenkins
+* [ Jenkins ] → Administrer Jenkins → Plugin → Slack Notification Plugin
+* [ Jenkins ] → configurer le système → Slack
+    * Créer le Credential slack_token
+
+![Capture_JENKINS_210.JPG](./assets/Capture_JENKINS_205.JPG)
+
+## Rendre partie pipline manuelle
+* [ Jenkins ] → Administrer Jenkins → Plugin → Build Pipline
+
+## Déploiement SSH
+* [ Jenkins ] → Administrer Jenkins → Plugin → Build Pipline
+
+```Groovy
+...
+EC2_PRODUCTION_HOST = "54.144.136.33"
+...
+stage('Deploy app on EC2-cloud Production') {
+    agent any
+    when{
+        expression{ GIT_BRANCH == 'origin/master'}
+    }
+    steps{
+        withCredentials([sshUserPrivateKey(credentialsId: "ec2_prod_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                script{ 
+                    timeout(time: 15, unit: "MINUTES") {
+                    input message: 'Do you want to approve the deploy in production?', ok: 'Yes'
+                    }
+                    sh'''
+                        ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:5000 $USERNAME/$IMAGE_NAME:$IMAGE_TAG
+                    '''
+                }
+            }
+        }
+    }
+}
+...
+```
+
+![Capture_JENKINS_208.JPG](./assets/Capture_JENKINS_208.JPG)<br>
+![Capture_JENKINS_209.JPG](./assets/Capture_JENKINS_209.JPG)
