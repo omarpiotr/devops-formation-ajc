@@ -161,7 +161,7 @@ Administrer Jenkins → Manage credential → portée global → ajouter des ind
 ![Capture_JENKINS_105.JPG](./assets/Capture_JENKINS_105.JPG)
 
 
-# TP5 : PROJET DE TYPE : PIPLINE (as code)
+# TP5 : PROJET DE TYPE PIPLINE (as code)
 
 ## Rajouter 2 crédentials:
 
@@ -296,6 +296,7 @@ pipeline {
 
 }
 ```
+## Créer un nouveau projet (activer écoute webhook)
 [ Jenkins ] → Nouveau Item
 * deploy-helloworld
 * Pipline
@@ -309,9 +310,34 @@ pipeline {
 
 * Lancer notre build
 
-## Webhook Trigger : Relier GitHub a notre Jenkis
+## Relier GitHub a notre Jenkins
 
 [ GitHub ] : Projet → Settings → add webhook
 * Set URL de Jenkins: http://54.90.47.28:8080/github-webhook/
 
 ![Capture_JENKINS_108.JPG](./assets/Capture_JENKINS_108.JPG)
+
+## En cas de changement d'@IP du serveur Jenkins
+* Mettre à jour l'URL coté Jenkins : 
+    * Administrer Jenkins → Configurer le system Jenkins Location
+* Mettre à jour l'URL dans GitHub :
+    * Projet → Settings → webhook → Setting
+    * Recent Delivery : on peut relancer pour voir si cela marche
+
+## Relier Jenkins à GitHub pour notifier si tout s'est bien passé
+* [ Jenkins ] → Administrer Jenkins → Plugin → Embeddable-build-status
+* [ Jenkins ] → Projet_Deploy → Embeddable Build Status → Links / Markdown / unprotected
+
+```[![Build Status](http://54.144.136.33:8080/buildStatus/icon?job=deploy-helloworld)](http://54.144.136.33:8080/job/deploy-helloworld/)```
+* [ GitHub ] → ajouter cette ligne a la fin de notre fichier README.md
+* Tests :
+    * Générer une erreur dans le Jenkins File
+        * Jenkins : Pipline failed
+        * gitHub : Readme change
+
+        ![Capture_JENKINS_201.JPG](./assets/Capture_JENKINS_201.JPG)
+    * Corriger l'erreur
+        * Jenkins : Pipline OK
+        * GitHub : OK
+
+        ![Capture_JENKINS_202.JPG](./assets/Capture_JENKINS_202.JPG)
