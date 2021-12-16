@@ -352,14 +352,14 @@ pipeline {
 * ajouter une application : Jenkins CI
 * Récupérer les information :
 
-![Capture_JENKINS_205.JPG](./assets/Capture_JENKINS_210.JPG)
+![Capture_JENKINS_210.JPG](./assets/Capture_JENKINS_210.JPG)
 
 ## Configuration sur Jenkins
 * [ Jenkins ] → Administrer Jenkins → Plugin → Slack Notification Plugin
 * [ Jenkins ] → configurer le système → Slack
     * Créer le Credential slack_token
 
-![Capture_JENKINS_210.JPG](./assets/Capture_JENKINS_205.JPG)
+![Capture_JENKINS_205.JPG](./assets/Capture_JENKINS_205.JPG)
 
 # SSH & Manuel
 
@@ -422,7 +422,7 @@ post {
     ```
     * Fournir à Jenkins clé privé afin qu'il puisse accéder à l'agent
 * [ Jenkins ] → Administrer Jenkins → gérer les noeuds → créer un noeud
-![Capture_JENKINS_209.JPG](./assets/Capture_JENKINS_209.JPG)
+![Capture_JENKINS_211.JPG](./assets/Capture_JENKINS_211.JPG)
 ```Groovy
 ...
 
