@@ -361,15 +361,18 @@ pipeline {
 
 ![Capture_JENKINS_210.JPG](./assets/Capture_JENKINS_205.JPG)
 
-## Rendre partie pipline manuelle
-* [ Jenkins ] → Administrer Jenkins → Plugin → Build Pipline
+# SSH & Manuel
 
-## Déploiement SSH
 * [ Jenkins ] → Administrer Jenkins → Plugin → Build Pipline
+    * permettre d'utiliser la fonction timeout qui attend une intervention manuelle (deltaT)
+* [ Jenkins ] Administrer Jenkins → Manage Credentials 
+![Capture_JENKINS_208.JPG](./assets/Capture_JENKINS_208.JPG)<br>
 
 ```Groovy
 ...
+
 EC2_PRODUCTION_HOST = "54.144.136.33"
+
 ...
 stage('Deploy app on EC2-cloud Production') {
     agent any
@@ -391,8 +394,90 @@ stage('Deploy app on EC2-cloud Production') {
         }
     }
 }
+
+...
+
+post {
+    success{
+        slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+    }
+    failure {
+        slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+    }
+}
+```
+
+![Capture_JENKINS_209.JPG](./assets/Capture_JENKINS_209.JPG)
+
+# AGENTS
+## Machine distance comme noeud / agent / esclave
+* Machine 
+    * Installer Java dessus
+    ```sh
+    #Agent Jenkins
+    ## Installation JAVA
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
+    sudo apt-get install openjdk-11-jdk gnupg2 -y
+    ```
+    * Fournir à Jenkins clé privé afin qu'il puisse accéder à l'agent
+* [ Jenkins ] → Administrer Jenkins → gérer les noeuds → créer un noeud
+![Capture_JENKINS_209.JPG](./assets/Capture_JENKINS_209.JPG)
+```Groovy
+...
+
+stage ('Build Image'){
+    agent { label 'agent-007'}
+    steps {
+        script{
+            sh 'docker build -t $USERNAME/$IMAGE_NAME:$IMAGE_TAG .'
+        }
+    }
+}
 ...
 ```
 
-![Capture_JENKINS_208.JPG](./assets/Capture_JENKINS_208.JPG)<br>
-![Capture_JENKINS_209.JPG](./assets/Capture_JENKINS_209.JPG)
+## Agent docker
+* Dépoilement à l'aide de docker (agent = docker)
+* Ajouter des plugins
+    * Docker
+    * Docker pipline
+```Groovy
+...
+
+stage('Deploy app on EC2-cloud Production test') {
+    agent {
+        docker {
+            image('alpine')
+            args ' -u root'
+        }
+    }
+    when{
+        expression{ GIT_BRANCH == 'origin/master'}
+    }
+    steps{
+        withCredentials([sshUserPrivateKey(credentialsId: "ec2_prod_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                script{
+                    timeout(time: 15, unit: "MINUTES") {
+                        input message: 'Do you want to approve the deploy in production?', ok: 'Yes'
+                    }						
+                    sh'''
+                        apk update
+                        which ssh-agent || ( apk add openssh-client )
+                        eval $(ssh-agent -s)
+                        ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker stop $CONTAINER_NAME || true
+                        ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker rm $CONTAINER_NAME || true
+                        ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker rmi $USERNAME/$IMAGE_NAME:$IMAGE_TAG || true
+                        ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:5000 $USERNAME/$IMAGE_NAME:$IMAGE_TAG
+                    '''
+                }
+            }
+        }
+    }
+}
+```
+# Exemples
+[cicd-jenkins-alpinehelloworld](https://github.com/omarpiotr/cicd-jenkins-alpine)<br>
+[cicd-jenkins-static-website](https://github.com/omarpiotr/cicd-jenkins-static-website)
+
