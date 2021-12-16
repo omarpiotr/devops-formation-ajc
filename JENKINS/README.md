@@ -319,7 +319,7 @@ pipeline {
 
 ## En cas de changement d'@IP du serveur Jenkins
 * Mettre à jour l'URL coté Jenkins : 
-    * Administrer Jenkins → Configurer le system Jenkins Location
+    * Administrer Jenkins → Configurer le system → Jenkins Location
 * Mettre à jour l'URL dans GitHub :
     * Projet → Settings → webhook → Setting
     * Recent Delivery : on peut relancer pour voir si cela marche
