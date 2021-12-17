@@ -1,9 +1,5 @@
 # TP 1 : déploiement Signle-node avec minikube
 * Déployer minikube a l'aide d'un conteneur Docker
-
-
-
-
 * EC2 : t2.large
 * 20 Go
 * sg-ajc-minkube : 22/ 80 / 8080 / 30000 - 32500
@@ -39,9 +35,6 @@ minikube start --driver=none
 docker ps
 kubectl version
 kubectl -v
-
-# commandes kubernetes :
-# kubectl <action> <type_ressource> <Nom_ressource>
 
 # afficher les noeuds
 kubectl get nodes
@@ -98,8 +91,8 @@ kubectl get deploy
 kubectl get rs
 > NAME                          DESIRED   CURRENT   READY   AGE
 > nginx-deployment-7c9cfd4dc7   3         3         3       51s
-kubectl create deploy webapp --image nginx --port 80 --replicas=3
 
+kubectl create deploy webapp --image nginx --port 80 --replicas=3
 kubectl get rs
 NAME                          DESIRED   CURRENT   READY   AGE
 nginx-deployment-7c9cfd4dc7   3         3         3       2m1s
@@ -128,7 +121,6 @@ kubectl get po
 > webapp-7dfc86cd9d-fcxmj
 
 kubectl get po -o wide
-
 kubectl port-forward deploy/nginx-deployment 8080:80 --address 0.0.0.0
 
 # information sur notre deployment
@@ -191,18 +183,42 @@ kubectl delete -f nginx-pod.yml
 ```
 
 # TP5 : Variables d'environnement
+webappcolor-pod.yml :
+```yml
+apiVersion: v1
+kind: Pod
+metadata : 
+  name: webapp-color
+  labels:
+    app: webapp-color
+    env: prod
+    formation: Frazer
+spec:
+  containers:
+    - name: webapp-color
+      image: kodekloud/webapp-color
+      ports:
+        - containerPort: 8080
+      env:
+        - name: APP_COLOR
+          value: blue
+```
 ```bash
 vi webappcolor-pod.yml
 kubectl create -f webappcolor-pod.yml
 kubectl get pod
 kubectl port-forward webapp-color 8080:8080 --address 0.0.0.0
+# http://52.91.141.146:8080/ : blue
+# CTRL + C 
 
-kubectl run webapp-color1 --image=kodekloud/webapp-color --env APP_COLOR=blue
+kubectl run webapp-color1 --image=kodekloud/webapp-color --env APP_COLOR=red
 kubectl port-forward webapp-color 8080:8080 --address 0.0.0.0
+
+# http://52.91.141.146:8080/ : rouge
+# CTRL + C 
 
 #Création de manifest à l'aide de commandes impératives
 kubectl run webapp-color --image=kodekloud/webapp-color --env APP_COLOR=red --dry-run=client -o yaml > webapp-pod.yml
-
 ```
 
 # TP 5 bis
@@ -250,6 +266,7 @@ spec:
 # kubectl delete po webapp-color --force
 kubectl run webapp1 --image=kodekloud/webapp-color -l  app=webapp,env=prod  --env APP_COLOR=blue
 kubectl apply -f rs-webapp.yml
+
 kubectl get po
 > NAME             READY   STATUS    RESTARTS   AGE
 > rswebapp-2dhdl   1/1     Running   0          23s
@@ -258,6 +275,7 @@ kubectl get po
 
 # Si on rajoute un webapp2
 kubectl run webapp2 --image=kodekloud/webapp-color -l  app=webapp,env=prod  --env APP_COLOR=blue
+
 # on voit que k8s le supprimer aussitot
 kubectl get po
 > NAME             READY   STATUS        RESTARTS   AGE
@@ -265,6 +283,7 @@ kubectl get po
 > rswebapp-sdbdc   1/1     Running       0          2m16s
 > webapp1          1/1     Running       0          14m
 > webapp2          1/1     Terminating   0          9s
+
 # si on supprimer un pod un nouveau sera crée
 kubectl delete pod rswebapp-2dhdl --force
 
@@ -272,6 +291,8 @@ kubectl delete pod rswebapp-2dhdl --force
 kubectl delete -f rs-webapp.yml
 kubectl get pod
 ```
+
+---
 
 # HELP
 ## INSTALLATION

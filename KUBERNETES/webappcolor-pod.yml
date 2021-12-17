@@ -3,7 +3,7 @@ kind: Pod
 metadata : 
   name: webapp-color
   labels:
-    app: nginx
+    app: webapp-color
     env: prod
     formation: Frazer
 spec:
@@ -14,5 +14,5 @@ spec:
         - containerPort: 8080
       env:
         - name: APP_COLOR
-          value: red
+          value: blue
 
