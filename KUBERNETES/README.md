@@ -1,4 +1,3 @@
-→
 # TP 1 : déploiement Signle-node avec minikube
 * Déployer minikube a l'aide d'un conteneur Docker
 
