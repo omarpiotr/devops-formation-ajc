@@ -2,7 +2,7 @@
 * Déployer minikube a l'aide d'un conteneur Docker
 * EC2 : t2.large
 * 20 Go
-* sg-ajc-minkube : 22/ 80 / 8080 / 30000 - 32500
+* sg-ajc-minkube : 22 / 80 / 8080 / [ 30000 - 32500 ]
 * 52.91.141.146 
 * Script de démarrage : Install Minikube Ubuntu
 ```bash
@@ -213,7 +213,6 @@ kubectl port-forward webapp-color 8080:8080 --address 0.0.0.0
 
 kubectl run webapp-color1 --image=kodekloud/webapp-color --env APP_COLOR=red
 kubectl port-forward webapp-color 8080:8080 --address 0.0.0.0
-
 # http://52.91.141.146:8080/ : rouge
 # CTRL + C 
 
