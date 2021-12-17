@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rswebapp
+  labels:
+    role: webapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      name: web
+      labels:
+        app: webapp
+        type: pod
+        formateur: Frazer
+    spec:
+      containers:
+        - name: web1
+          image: kodekloud/webapp-color
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_COLOR
+              value: green
+            - name: TEST
+              value: Frazer 

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata : 
+  name: nginx-pod1
+  labels:
+    app: nginx
+    env: prod
+    formation: Frazer
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.21
+      ports:
+        - containerPort: 80
+
+
+---
+apiVersion: v1
+kind: Pod
+metadata : 
+  name: nginx-pod2
+  labels:
+    app: nginx
+    env: prod
+    formation: Frazer
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.21
+      ports:
+        - containerPort: 80
