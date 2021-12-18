@@ -52,8 +52,6 @@ docker rmi -f $(docker images -aq)
 docker rm -f $(docker ps -aq) && docker rmi -f $(docker images -aq)
 ```
 
----
-
 # TP02 : Build et push de l'image
 ## Version 1 : Création d'une image avec contenu en local
 ```Bash
