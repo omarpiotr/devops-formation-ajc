@@ -635,8 +635,3 @@ phases:
 * etape 4 ignorer
 
 ![Capture240](./assets/Capture_AWS_240.JPG "Capture240")<br>
-
-
-# QCM (a faire d'ici fin semaine) 
-https://qruiz.net/Q/?q5Z2SJ
-
