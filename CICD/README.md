@@ -242,7 +242,7 @@ docker run -u root --name jenkins -p 9090:8080 -p 50000:50000 -v jenkins_home:/v
 * Manage Jenkins → Global Configuration tool → Add Docker instllation  → install automatically (Download from docker.com) : DockerLatest
 
 
-## Configuration du plugin sonar (Jenkins → Sonar )
+## Configuration du plugin sonar ( Jenkins → Sonar )
 * (help depuis Sonar) http://52.23.177.191:8080/documentation/analysis/jenkins/
 * Manage jenkins → config système → sonarqube server → ajouter installation 
     * nom dans jenkinsfile Nom : SonarQubeLocalServer
@@ -251,7 +251,7 @@ docker run -u root --name jenkins -p 9090:8080 -p 50000:50000 -v jenkins_home:/v
 
 ![Capture15](./assets/Capture_CICD15.JPG )
 
-## Configurer sonar pour communiquer avec Jenkins (configurer un web hook)
+## Configurer sonar webhook ( Sonar → Jenkins )
 * IHM de Sonar : http://52.23.177.191:8080
 * Administration → Configuration → webhooks
     * Name : Jenkins webhook
@@ -294,7 +294,7 @@ https://accounts.google.com/DisplayUnlockCaptcha
 ```
 
 
-## Configuration d'un pipline multibranche sous Jenkins 
+## Jenkins: Configuration d'un pipline multibranche  
 * Ecouter plusieur branches à la fois → a chaque modification sur l'une des branches → déclancher le pipline
 * Jenkins → nouvel item  → Saisir un nom + pipeline mutibranche
     * Nom : calculatrice
