@@ -53,7 +53,9 @@ echo 'source <(kubectl completion bash)' >> ${HOME}/.bashrc
 
 # information sur les clusters
 kubectl  cluster-info
-
+```
+# TP 2 : déploiement votre première application
+```bash
 # création d'un pod
 kubectl run nginx-omar --image nginx --port 80
 kubectl get po
