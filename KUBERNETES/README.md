@@ -65,18 +65,17 @@ kubectl logs nginx-omar
 
 # liste de nos pod avec plus d'options
 kubectl get po -o wide
+```
 
+# TP3 : Consommer notre application via le port forward
+```bash
 # Replica Set : on fédère les pod autour d'une ressource
 kubectl get replicasets.apps
 kubectl get rs
 
 # Deployment (gérer le cycle de vie de notre application): fédérer les replicatset
 kubectl get deployments.apps
-```
 
-# TP3 : Consommer notre application via le port forward
-```bash
-kubectl get rs
 # pour des besoins de test (non durable): bloque le terminal
 kubectl port-forward nginx-omar 8080:80 --address 0.0.0.0
 # CTRL + C : arrêter
@@ -95,10 +94,10 @@ kubectl get rs
 > nginx-deployment-7c9cfd4dc7   3         3         3       51s
 
 kubectl create deploy webapp --image nginx --port 80 --replicas=3
-kubectl get rs
-NAME                          DESIRED   CURRENT   READY   AGE
-nginx-deployment-7c9cfd4dc7   3         3         3       2m1s
-webapp-7dfc86cd9d
+> kubectl get rs
+> NAME                          DESIRED   CURRENT   READY   AGE
+> nginx-deployment-7c9cfd4dc7   3         3         3       2m1s
+> webapp-7dfc86cd9d
 
 kubectl get po
 > NAME                                READY   STATUS    RESTARTS   AGE
@@ -343,7 +342,7 @@ sudo echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 sudo systemctl enable docker.service
 ```
 
-## COMMANDE
+## COMMANDES
 ```
 # Activer l'autocomplétion kubernetes
 echo 'source <(kubectl completion bash)' >> ${HOME}/.bashrc
