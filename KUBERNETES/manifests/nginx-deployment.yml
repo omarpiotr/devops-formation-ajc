@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dp-nginx
+  labels:
+    role: nginx
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  replicas: 8
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        type: pod
+        formateur: Frazer
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.21.3
+          ports:
+            - containerPort: 80
