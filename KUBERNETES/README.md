@@ -110,9 +110,10 @@ kubectl get po
     webapp-7dfc86cd9d-7jb2z             1/1     Running   0          51s
     webapp-7dfc86cd9d-cnvrf             1/1     Running   0          51s
     webapp-7dfc86cd9d-phd8v  
-    # si on supprimer un pod, le deploy va en créer un nouveau !!!
+
+# si on supprimer un pod, le deploy va en créer un nouveau !!!
 kubectl delete po webapp-7dfc86cd9d-phd8v
-> pod "webapp-7dfc86cd9d-phd8v" deleted
+    pod "webapp-7dfc86cd9d-phd8v" deleted
 
 kubectl get po
     NAME                                READY   STATUS    RESTARTS   AGE
