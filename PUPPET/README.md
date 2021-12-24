@@ -38,7 +38,8 @@ vi /etc/selinux/config
 
 # Test de ping depuis chacunes des machines
 ping puppetmaster.omar.edu
-ping client.omar.edu
+ping agentcentos.omar.edu
+ping agentubutnu.omar.edu
 ```
 ## 1.3) Configuration de la machine SERVEUR
 ```bash
