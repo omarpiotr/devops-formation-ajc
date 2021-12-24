@@ -2,9 +2,11 @@
 
 ## 1.1) PRE-REQUIS (AWS)
 * EC2
-    * t2.medium (4Go RAM / 2 CPU / 20 Go)
+    * serveur : t2.medium (4Go RAM / 2 CPU / 20 Go)
+    * agents : t2.micro
 * SG
     * Ports SSH (22) / ICMP (ping) / 8140 (puppet)
+* Les machines doivent être sur le même VLAN
 
 ## 1.2) Initialisation des 2 machines
 ```bash
@@ -107,7 +109,7 @@ vi /etc/puppetlabs/puppet/puppet.conf
 ```
 ```
 [main]
-certname = client.omar.edu
+certname = agentcentos.omar.edu
 server = puppetmaster.omar.edu
 environment = production
 runinterval = 1h 
@@ -127,10 +129,20 @@ wget https://apt.puppet.com/puppet7-release-focal.deb
 sudo dpkg -i puppet7-release-focal.deb
 sudo apt-get update
 sudo apt-get install puppet-agent
-# faire la config de /etc/puppetlabs/puppet/puppet.conf
+
+# configuration
+vi /etc/puppetlabs/puppet/puppet.conf
+
 # sortir et rerentrer dans le sudo
 exit
 sudo su -
+```
+```
+[main]
+certname = agentubuntu.omar.edu
+server = puppetmaster.omar.edu
+environment = production
+runinterval = 1h 
 ```
 
 ## 1.6) Démarrage de l'agent et signature du certificat
@@ -146,10 +158,11 @@ sudo su -
     # afficher les certificats en attente de validation (celui de l'agent)
     puppetserver ca list
     # générer puis singer le certificat
-    puppetserver ca sign --certname client.omar.edu
+    puppetserver ca sign --certname agentcentos.omar.edu
+    puppetserver ca sign --certname agentubuntu.omar.edu
     ```
 
-# 2) LAB 0 : Premier manifeest  (création d'un repertoire)
+# 2) LAB 0 : Premier manifest  (création d'un repertoire)
 ## serveur puppet
 ```bash
 cd /etc/puppetlabs/code/environments/production/manifests/
