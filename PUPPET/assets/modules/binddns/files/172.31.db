@@ -1,0 +1,17 @@
+@   IN  SOA     ns1.omar.local.com. root.omar.local.com. (
+                                                1001    ;Serial
+                                                3H      ;Refresh
+                                                15M     ;Retry
+                                                1W      ;Expire
+                                                1D      ;Minimum TTL
+                                                )
+
+;Name Server Information
+@       IN      NS      ns1.omar.local.com.
+
+;Reverse lookup for Name Server
+83.83   IN      PTR     ns1.omar.local.com.
+
+;PTR Record IP address to HostName
+80.90   IN      PTR     www.omar.local.com.
+25.90   IN      PTR     mail.omar.local.com.

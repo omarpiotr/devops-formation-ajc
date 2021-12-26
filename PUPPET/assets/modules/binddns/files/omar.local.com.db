@@ -1,0 +1,23 @@
+@   IN  SOA     ns1.omar.local.com. root.omar.local.com. (
+                                                1001    ;Serial
+                                                3H      ;Refresh
+                                                15M     ;Retry
+                                                1W      ;Expire
+                                                1D      ;Minimum TTL
+                                                )
+
+;Name Server Information
+@       IN      NS      ns1.omar.local.com.
+
+;IP address of Name Server
+ns1     IN      A       172.31.83.83
+
+;Mail exchanger
+omar.local.com. IN  MX 10   mail.omar.local.com.
+
+;A - Record HostName To IP Address
+www     IN      A       172.31.90.80
+mail    IN      A       172.31.90.25
+
+;CNAME record
+ftp     IN      CNAME   www.omar.local.com.
