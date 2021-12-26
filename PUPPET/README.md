@@ -397,6 +397,7 @@ Installation et configuration d'outils bind-test pour utiliser et tester notre s
 cd /etc/puppetlabs/code/environments/production/modules/
 mkdir -p binddns/{files,templates,manifests}
 ```
+!["Capture_02"](./assets/Capture_puppet_lab2_01.JPG)
 
 #### **`modules/binddns/files/named.conf`**
 ```
