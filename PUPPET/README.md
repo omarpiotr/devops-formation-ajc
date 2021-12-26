@@ -377,7 +377,7 @@ Installation et configuration d'outils bind-test pour utiliser et tester notre s
         * créer fichier /etc/named/omar.local.com.db
         * créer fichier /etc/named/172.31.db
 * Notre serveur DNS résoudra les noms suivant :
-    * ns.omar.local.com 172.31.83.83 (agentcentos)
+    * ns1.omar.local.com 172.31.83.83 (agentcentos)
     * www.omar.local.com 172.31.90.80 (fictif)
     * mail.omar.local.com 172.31.90.25 (fictif)
     * ftp.omar.local.com <=> www.omar.local.com
