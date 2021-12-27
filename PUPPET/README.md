@@ -399,7 +399,7 @@ mkdir -p binddns/{files,templates,manifests}
 ```
 !["Capture_02"](./assets/Capture_puppet_lab2_01.JPG)
 
-#### **`modules/binddns/files/named.conf`**
+#### **`/modules/binddns/files/named.conf`**
 ```
 options {
     listen-on port 53 { 127.0.0.1; 172.31.83.83; };
@@ -420,7 +420,7 @@ zone "31.172.in-addr.arpa" IN {
     allow-update { none; };
 };
 ```
-#### **`modules/binddns/files/omar.local.com.db`**
+#### **`/modules/binddns/files/omar.local.com.db`**
 ```
 @   IN  SOA     ns1.omar.local.com. root.omar.local.com. (
                                                 1001    ;Serial
@@ -447,7 +447,7 @@ mail    IN      A       172.31.90.25
 ftp     IN      CNAME   www.omar.local.com.
 ```
 
-#### **`modules/binddns/files/172.31.db`**
+#### **`/modules/binddns/files/172.31.db`**
 ```
 @   IN  SOA     ns1.omar.local.com. root.omar.local.com. (
                                                 1001    ;Serial
@@ -468,7 +468,7 @@ ftp     IN      CNAME   www.omar.local.com.
 25.90   IN      PTR     mail.omar.local.com.
 ```
 
-#### **`modules/binddns/manifests/init.pp`**
+#### **`/modules/binddns/manifests/init.pp`**
 ```ruby
 class binddns::update {
     if $facts['os']['name'] == 'Ubuntu'
@@ -657,4 +657,185 @@ dig mail.omar.local.com
     ;; SERVER: 172.31.83.83#53(172.31.83.83)
     ;; WHEN: Sat Dec 25 23:12:57 UTC 2021
     ;; MSG SIZE  rcvd: 98
+```
+
+# 5) LAB 3 : Docker 
+```bash
+cd /etc/puppetlabs/code/environments/production/modules/
+mkdir -p wordpress/{files,templates,manifests}
+```
+#### **`/manifests/docker.pp`**
+```ruby
+class { 'docker':
+  version      => 'latest',
+  docker_users => ['centos'],
+}
+
+class {'docker::compose':
+  ensure  => present,
+  version => '1.29.2',
+}
+
+docker::run { 'nginx_container':
+  ensure           => present,
+  image            => 'nginx',
+  ports            => ['8090:80'],
+  extra_parameters => [ '--restart=no' ],
+}
+```
+#### **`/manifests/mario.pp`**
+```ruby
+docker::run { 'mario':
+  ensure           => present,
+  image            => 'pengbai/docker-supermario',
+  ports            => ['8600:8080'],
+  extra_parameters => [ '--restart=no' ],
+}
+```
+
+# 6) LAB 4 : Docker-compose Wordpress (module)
+#### **`/manifests/wordpress.pp`**
+```ruby
+include wordpress
+```
+#### **`/modules/wordpress/manifests/init.pp`**
+```ruby
+class wordpress {
+  file { '/tmp/docker-compose.yml':
+    ensure => file,
+    source => 'puppet:///modules/wordpress/docker-compose_wordpress.yml',
+  }
+
+  docker_compose { 'test':
+    compose_files => ['/tmp/docker-compose.yml'],
+    ensure        => present,
+  }
+}
+```
+#### **`/modules/wordpress/files/docker-compose_wordpress.yml`**
+```yml
+version: "3.1"
+
+services:
+
+  wordpress:
+    image: wordpress
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - wordpress:/var/www/html
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  wordpress:
+  db:
+```
+
+# 7) REPORTING (machine puppetmaster / ne marche pas)
+* PuppetDB : sauvegarder les reportings 
+* Postgres 11
+* puppetboard : dashboard consommer les reportings depuis PuppetDB
+
+```bash
+# add 127.0.0.1 puppetdb puppet.hom in /etc/hosts
+mkdir -p /root/puppetdb
+vim /root/puppetdb/01_install_docker.pp
+```
+#### **`/root/puppetdb/01_install_docker.pp`**
+```ruby
+class { 'docker':
+  docker_users => ['centos'],
+}
+
+class {'docker::compose':
+  ensure => present,
+}
+```
+```bash
+puppet apply /root/puppetdb/01_install_docker.pp
+vim /root/puppetdb/02_postgres.pp
+```
+#### **`/root/puppetdb/02_postgres.pp`**
+```ruby
+docker::run { 'postgres':
+  image            => 'postgres:11',
+  ports            => '5432:5432',
+  env              => ['POSTGRES_DB=puppetdb','POSTGRES_PASSWORD=puppetdb', 'POSTGRES_USER=puppetdb'],
+}
+```
+
+```bash
+puppet apply /root/puppetdb/02_postgres.pp
+vim /root/puppetdb/03_puppetdb.pp
+```
+#### **`/root/puppetdb/03_puppetdb.pp`**
+```ruby
+class { 'puppetdb::server':
+  listen_address    => '0.0.0.0',
+  open_listen_port  => 'true',
+  listen_port       => '8080',
+  database_host     => '127.0.0.1',
+  database_port     => '5432',
+  database_username => 'puppetdb',
+  database_password => 'puppetdb',
+  database_name     => 'puppetdb',
+  read_database_username => 'puppetdb',
+  read_database_password => 'puppetdb',
+}
+class { 'puppetdb::master::config': }
+```
+```bash
+puppet module install puppetlabs-puppetdb --version 7.10.0
+puppet apply /root/puppetdb/03_puppetdb.pp
+systemctl status puppetdb
+
+# vérification http://IP_PUPPET_SERVER:8080
+
+vim /root/puppetdb/04_puppetboard.pp
+```
+#### **`/root/puppetdb/04_puppetboard.pp`**
+```ruby
+class { 'puppetboard':
+  python_version  => '3.6',
+  enable_catalog  => false,
+}
+
+python::pip { 'flask':
+virtualenv => '/srv/puppetboard/virtenv-puppetboard',
+}
+
+class { 'apache': }
+class { 'apache::mod::wsgi': }
+
+class { 'puppetboard::apache::vhost':
+  vhost_name => 'puppet.home',
+  port       => 8888,
+}
+```
+```bash
+yum install git -y
+puppet module uninstall puppetlabs-stdlib --force
+puppet module install puppetlabs-stdlib --version 7.0.0
+puppet module install puppet-puppetboard --version 8.0.0
+puppet module install puppetlabs-apache --version 7.0.0
+puppet module install puppet-python --version 6.2.1
+puppet module install puppetlabs-vcsrepo --version 5.0.0
+
+puppet apply /root/puppetdb/04_puppetboard.pp
+
+# vérification http://IP_PUPPET_SERVER:8888
 ```
