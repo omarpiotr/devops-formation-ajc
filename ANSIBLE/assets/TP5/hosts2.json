@@ -1,0 +1,35 @@
+{
+    "all": {
+        "children": {
+            "localhost": {
+                "ansible_connection": "local",
+                "ansible_user": "ubuntu"
+            },
+            "worker01": {
+                "ansible_host": "172.31.94.223",
+                "ansible_password": "ubuntu",
+                "ansible_ssh_common_args": "-o StrictHostKeyChecking=no",
+                "ansible_user": "ubuntu",
+                "env": "production"
+            },
+            "worker02": {
+                "ansible_host": "172.31.91.167",
+                "ansible_password": "ubuntu",
+                "ansible_ssh_common_args": "-o StrictHostKeyChecking=no",
+                "ansible_user": "ubuntu",
+                "env": "production"
+            }
+        }
+    },
+    "ansible": {
+        "hosts": [
+            "localhost"
+        ]
+    },
+    "prod": {
+        "hosts": [
+            "worker01",
+            "worker02"
+        ]
+    }
+}
