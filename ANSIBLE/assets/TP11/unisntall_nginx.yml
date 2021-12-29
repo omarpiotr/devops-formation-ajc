@@ -1,0 +1,18 @@
+---
+- name: "Web Server Uninstall"
+  become: yes
+  hosts: prod
+  
+  tasks:
+    - name: "Stop nginx"
+      service:
+        name: nginx
+        enabled: false
+        state: stopped
+
+    - name: "Delete Nginx"
+      package:
+        name: nginx
+        state: absent
+        purge: yes
+        autoremove: yes

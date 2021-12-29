@@ -1,0 +1,11 @@
+#!/bin/bash
+{% if ansible_distribution == "Ubuntu" %}
+sudo apt-get update -y
+sudo apt-get install {{ web_package }} -y
+{% elif ansible_distribution == "Centos" %}
+sudo yum install epel-release -y
+sudo yum update -y
+sudo yum install {{ web_package }} -y
+{% else %}
+echo 'Distribution non prise en charge'
+{% endif %}

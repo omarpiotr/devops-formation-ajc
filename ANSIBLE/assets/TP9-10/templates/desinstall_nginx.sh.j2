@@ -1,0 +1,8 @@
+#!/bin/bash
+{% if ansible_distribution == "Ubuntu" %}
+sudo apt-get purge --auto-remove {{ web_package }} -y
+{% elif ansible_distribution == "Centos" %}
+sudo yum purge {{ web_package }} -y
+{% else %}
+echo 'Distribution non prise en charge'
+{% endif %}

@@ -1,0 +1,24 @@
+---
+- name: "Script Web Deployment"
+  become: yes
+  hosts: prod
+
+  tasks:
+    - name: "Install Nginx"
+      apt:
+        name: "{{ item }}"
+        state: present
+      when: ansible_distribution == "Ubuntu"
+      loop:
+        - nginx
+        - git
+
+    - name: "start nginx"
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+      when: ansible_distribution == "Ubuntu"
+
+
+ 

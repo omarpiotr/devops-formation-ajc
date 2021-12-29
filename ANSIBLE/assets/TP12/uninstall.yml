@@ -1,0 +1,13 @@
+---
+- name: "Uninstall Nginx"
+  become: yes
+  hosts: prod
+
+  tasks:
+    - name: "Desinstall Nginx"
+      apt:
+        name: nginx
+        state: absent
+        purge: yes
+        autoremove: yes
+      when: ansible_distribution == "Ubuntu"

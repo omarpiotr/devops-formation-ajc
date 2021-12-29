@@ -1,0 +1,58 @@
+---
+- name: "Change hosts/ hostname for Master"
+  become: yes
+  hosts: localhost
+
+  tasks:
+    - name : "Change hostname command version"
+      command: "sudo hostnamectl set-hostname {{ hostname }}"
+    
+    - name: "Copy hosts File From Template"
+      template:
+        src: hosts.j2
+        dest: /etc/hosts
+
+    #- name: "Edit the hosts file"
+    #  command: "sh -c 'echo 127.0.0.1 {{ hostname }} >> /etc/hosts'"
+
+- name: "Web Server"
+  become: yes
+  hosts: prod
+
+  pre_tasks:
+    - name : "Change Hostname module version"
+      hostname:
+        name: "{{ hostname }}"
+
+    - name: "Copy hosts File From Template"
+      template:
+        src: hosts.j2
+        dest: /etc/hosts
+
+  tasks:
+    - name: "Install Nginx"
+      package:
+        name: nginx
+        state: present
+
+    - name: "Start nginx"
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+        
+    - name: "Remove File index.html"
+      file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: "Git Clone the website"
+      git:
+        repo: "https://github.com/diranetafen/static-website-example.git"
+        dest: "/var/www/html/"
+        force: yes
+    
+    - name: "Copy Index File From Template"
+      template:
+        src: index.html.j2
+        dest: /var/www/html/index.html

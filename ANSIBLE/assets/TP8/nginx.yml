@@ -1,0 +1,45 @@
+---
+- name: "Web Deployment"
+  become: yes
+  hosts: worker01
+  vars:
+    env: playboooook
+
+  pre_tasks:
+    - name: "Test debug env var"
+      debug:
+        msg: "{{ env }}"
+
+  tasks:
+    - name: "install nginx"
+      package:
+        name: nginx
+        state: present
+
+    - name: "start nginx"
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+
+    - name: "Remove File index.html"
+      file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: "Create File"
+      copy:
+        content: "Omar Piotr BENNANI"
+        dest: /var/www/html/index.html
+
+- name: "Afficher env"
+  hosts: worker02
+  become: true
+  vars:
+    env: playbookuuuuuu
+#  vars_files:
+#    - /home/ubuntu/nginx/env.yml
+  tasks:
+    - name: "Test debug env var"
+      debug:
+          msg: "{{ env }}"

@@ -93,7 +93,7 @@ ansible -i hosts worker01 -m file -a "path=/home/ubuntu/omar.txt state=absent"
 ```
 
 # TP 3 Modules
-ansible -i hosts worker01 -b -m apt -a "name=nginx state=absent purge=yes force_apt_get=yes"
+
 ```bash
 # via apt
 ansible -i hosts all -m ping
@@ -104,6 +104,9 @@ ansible -i hosts worker02 -m apt -b -a 'name=nginx' -b
 ansible -i hosts worker01 -m apt -a 'name=apache2 state=absent purge=yes' -b
 ansible -i hosts worker02 -m apt -a 'name=nginx state=absent purge=yes' -b
 
+#ansible -i hosts worker01 -b -m apt -a "name=nginx state=absent purge=yes force_apt_get=yes"
+#sudo apt-get remove --purge --auto-remove nginx
+
 # via package
 ansible -i hosts worker01 -m package -b -a "name=nginx state=present"
 ansible -i hosts worker02 -m package -b -a "name=apache2 state=present"
@@ -112,8 +115,6 @@ ansible -i hosts worker01 -m service -a "name=nginx state=started enabled=yes" -
 
 ansible -i hosts worker01 -m package -b -a "name=nginx state=absent purge=yes autoremove=yes"
 ansible -i hosts worker02 -m package -b -a "name=apache2 state=absent purge=yes autoremove=yes"
-
-#sudo apt-get remove --purge --auto-remove nginx
 ```
 # TP4 : Invetaire au format yaml & module setup
 #### ***`hosts.yml`***
@@ -243,7 +244,7 @@ all:
 }
 ```
 
-# TP 6: surcharge de variable
+# TP 6-7: surcharge de variable
 * Création des repertoires et fichiers
     * group_vars/prod.yml
     * host_vars/worker01.yml
@@ -255,4 +256,304 @@ all:
 mkdir group_var host_vars
 ansible -i hosts.ini all -m debug -a "msg={{ env }}"
 ansible -i hosts.ini worker01 -m debug -a "msg={{ env }}" -e env='test'
+```
+
+# TP 8: Deployer un serveur web
+!["Capture_ansible_101.JPG"](./assets/Capture_ansible_101.JPG)
+#### ***`group_vars/prod.yml`***
+```yml
+env: prod
+ansible_user: ubuntu
+ansible_password: ubuntu
+ansible_ssh_common_args: -o StrictHostKeyChecking=no
+```
+#### ***`prod.yml`***
+```yml
+all:
+  children:
+    ansible:
+      hosts:
+        localhost:
+          ansible_connection: local
+    prod:
+      hosts:
+        worker01:
+          ansible_host: 172.31.93.31
+        worker02:
+          ansible_host: 172.31.91.167
+      vars:
+        env: production    
+```
+
+#### ***`nginx`***
+```yml
+---
+- name: "Web Deployment"
+  become: yes
+  hosts: worker01
+
+  tasks:
+    - name: "install nginx"
+      package:
+        name: nginx
+        state: present
+
+    - name: "start nginx"
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+
+    - name: "Remove File index.html"
+      file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: "Create File"
+      copy:
+        content: "Omar sur Nginx"
+        dest: /var/www/html/index.html
+```
+```bash
+#installer anisble-lint
+sudo apt-get install ansible-lint
+
+# vérifier la syntax du playbook
+ansible-lint nginx.yml
+
+# lancer le playbook
+ansible-playbook -i prod.yml nginx.yml
+```
+
+# TP 9-10 : Jinja
+!["Capture_ansible_102.JPG"](./assets/Capture_ansible_102.JPG)
+#### ***`install_nginx.yml`***
+```yml
+---
+- name: "Script Web Deployment"
+  become: yes
+  hosts: prod
+  vars:
+    web_package: nginx
+
+  tasks:
+    - name: "Copy Script "
+      template:
+        src: "install_nginx.sh.j2"
+        dest: "/home/{{ ansible_user }}/install_nginx.sh"
+ 
+    - name: "Execute Script"
+      command: "sh /home/{{ ansible_user }}/install_nginx.sh"
+```
+#### ***`desinstall_nginx.yml`***
+```yml
+---
+- name: "Script Web Deployment"
+  become: yes
+  hosts: worker02
+  vars:
+    web_package: nginx
+
+  tasks:
+    - name: "Copy Script "
+      template:
+        src: "desinstall_nginx.sh.j2"
+        dest: "/home/{{ ansible_user }}/desinstall_nginx.sh"
+
+    - name: "Execute Script"
+      command: "sh /home/{{ ansible_user }}/desinstall_nginx.sh"
+```
+#### ***`templates/install_nginx.sh.j2`***
+```j2
+#!/bin/bash
+{% if ansible_distribution == "Ubuntu" %}
+sudo apt-get update -y
+sudo apt-get install {{ web_package }} -y
+{% elif ansible_distribution == "Centos" %}
+sudo yum install epel-release -y
+sudo yum update -y
+sudo yum install {{ web_package }} -y
+{% else %}
+echo 'Distribution non prise en charge'
+{% endif %}
+```
+#### ***`templates/desinstall_nginx.sh.j2`***
+```j2
+#!/bin/bash
+{% if ansible_distribution == "Ubuntu" %}
+sudo apt-get purge --auto-remove {{ web_package }} -y
+{% elif ansible_distribution == "Centos" %}
+sudo yum purge {{ web_package }} -y
+{% else %}
+echo 'Distribution non prise en charge'
+{% endif %}
+```
+```bash
+# lancer le playbook d'installation
+ansible-playbook -i hosts.yml install_nginx.yml
+
+# lancer le playbook de désinstallation
+ansible-playbook -i hosts.yml desinstall_nginx.yml
+```
+
+# TP 11 : 
+!["Capture_ansible_103.JPG"](./assets/Capture_ansible_103.JPG)
+#### ***`hosts.yml`***
+```yml
+all:
+  children:
+    ansible:
+      hosts:
+        localhost:
+          ansible_connection: local
+          ansible_user: ubuntu
+          hostname: AnsibleMaster
+    prod:
+      hosts:
+        worker01: 
+          ansible_host: 172.31.93.31
+          hostname: AnsibleWorker01
+        worker02:
+          ansible_host: 172.31.91.167
+          hostname: AnsibleWorker02
+      vars:
+        web_package: nginx 
+  vars:
+    ansible_sudo_pass: ubuntu 
+```
+#### ***`webapp.yml`***
+```yml
+---
+- name: "Change hosts/ hostname for Master"
+  become: yes
+  hosts: localhost
+
+  tasks:
+    - name : "Change hostname command version"
+      command: "sudo hostnamectl set-hostname {{ hostname }}"
+    
+    - name: "Copy hosts File From Template"
+      template:
+        src: hosts.j2
+        dest: /etc/hosts
+
+    #- name: "Edit the hosts file"
+    #  command: "sh -c 'echo 127.0.0.1 {{ hostname }} >> /etc/hosts'"
+
+- name: "Web Server"
+  become: yes
+  hosts: prod
+
+  pre_tasks:
+    - name : "Change Hostname module version"
+      hostname:
+        name: "{{ hostname }}"
+
+    - name: "Copy hosts File From Template"
+      template:
+        src: hosts.j2
+        dest: /etc/hosts
+
+  tasks:
+    - name: "Install Nginx"
+      package:
+        name: nginx
+        state: present
+
+    - name: "Start nginx"
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+        
+    - name: "Remove File index.html"
+      file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: "Git Clone the website"
+      git:
+        repo: "https://github.com/diranetafen/static-website-example.git"
+        dest: "/var/www/html/"
+        force: yes
+    
+    - name: "Copy Index File From Template"
+      template:
+        src: index.html.j2
+        dest: /var/www/html/index.html
+
+```
+#### ***`templates/hosts.j2`***
+```j2
+127.0.0.1 localhost
+127.0.0.1 {{ hostname }}
+```
+#### ***`templates/index.html.j2`***
+```j2
+...
+<h1>Dimension {{ ansible_hostname }}</h1>
+...
+```
+
+```bash
+# "sh -c 'echo 127.0.0.1 {{ hostname }} >> /etc/hosts'" : defaut réécriture
+
+# lancer le playbook d'installation
+ansible-playbook -i hosts.yml webapp.yml
+
+# test sur les machines distantes
+curl 127.0.0.1 | grep -i "dimension"
+systemctl status nginx
+
+# lancer le playbook de désinstallation
+ansible-playbook -i hosts.yml uninstall_nginx.yml
+```
+# TP 12 : 
+!["Capture_ansible_104.JPG"](./assets/Capture_ansible_104.JPG)
+#### ***`install.yml`***
+```yml
+---
+- name: "Script Web Deployment"
+  become: yes
+  hosts: prod
+
+  tasks:
+    - name: "Install Nginx"
+      apt:
+        name: "{{ item }}"
+        state: present
+      when: ansible_distribution == "Ubuntu"
+      loop:
+        - nginx
+        - git
+
+    - name: "start nginx"
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+      when: ansible_distribution == "Ubuntu"
+```
+#### ***`uninstall.yml`***
+```yml
+---
+- name: "Uninstall Nginx"
+  become: yes
+  hosts: prod
+
+  tasks:
+    - name: "Desinstall Nginx"
+      apt:
+        name: nginx
+        state: absent
+        purge: yes
+        autoremove: yes
+      when: ansible_distribution == "Ubuntu"
+```
+```bash
+# lancer le playbook d'installation
+ansible-playbook -i hosts.yml install.yml
+
+# lancer le playbook de désinstallation
+ansible-playbook -i hosts.yml uninstall.yml
 ```
