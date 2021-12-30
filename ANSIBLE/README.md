@@ -794,7 +794,7 @@ ansible -i hosts.yml all -m ping --key-file "/home/ubuntu/omar-kp-ajc.pem"
 
 ```
 * Ajouter la variable dans nos fichier .yml afin de ne plus spécifier la clé dans la ligne de commande
-### ***`Nos fichiers YAML`***
+#### ***`Nos fichiers YAML`***
 ```yml
 vars:
     ansible_ssh_private_key_file: "/home/ubuntu/omar-kp-ajc.pem"
