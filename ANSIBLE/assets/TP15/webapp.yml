@@ -1,0 +1,30 @@
+---
+- name: "Docker httpd container"
+  become: true
+  hosts: worker01
+
+  tasks:
+    - name: "Create directory"
+      file:
+        path: "/home/ubuntu/static-website"
+        state: directory
+
+    - name: "Git Clone"
+      git:
+        repo: "https://github.com/diranetafen/static-website-example.git"
+        dest: "/home/ubuntu/static-website"
+        force: yes
+
+    - name: "Copy Index File From Template"
+      template:
+        src: index.html.j2
+        dest: /home/ubuntu/static-website/index.html
+        
+    - name: "Create httpd container"
+      docker_container: 
+        name: webapp
+        image: httpd
+        ports:
+          - "80:80"
+        volumes:
+          - "/home/ubuntu/static-website:/usr/local/apache2/htdocs/"

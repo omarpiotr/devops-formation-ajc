@@ -1,0 +1,17 @@
+---
+- name: "Docker Installation"
+  become: yes
+  hosts: prod
+
+  tasks:
+  - name: "Install python pip"
+    apt:
+        name: python3-pip
+        state: present
+    when: ansible_distribution == "Ubuntu"
+
+  - name: "Install docker-py module"
+    pip:
+        name: docker-py
+        state: present
+  

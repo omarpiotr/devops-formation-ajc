@@ -1,0 +1,15 @@
+---
+- name: "Install Applications"
+  apt:
+    name: "{{ item }}"
+    state: present
+
+- name: "Remove File index.html"
+  file:
+    path: /var/www/html/index.html
+    state: absent
+
+- name: "Create File"
+  copy:
+    content: "Omar Piotr BENNANI\n"
+    dest: /var/www/html/index.html

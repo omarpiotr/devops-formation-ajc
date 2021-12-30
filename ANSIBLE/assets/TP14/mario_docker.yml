@@ -1,0 +1,12 @@
+---
+- name: "Docker Installation"
+  become: yes
+  hosts: worker02
+
+  tasks:
+    - name: "Create Mario container"
+      docker_container: 
+        name: mario
+        image: pengbai/docker-supermario
+        ports:
+          - "8600:8080"

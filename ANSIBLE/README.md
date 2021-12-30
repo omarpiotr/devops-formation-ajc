@@ -557,3 +557,329 @@ ansible-playbook -i hosts.yml install.yml
 # lancer le playbook de désinstallation
 ansible-playbook -i hosts.yml uninstall.yml
 ```
+
+# TP 13 : Include tasks and tags
+!["Capture_ansible_201.JPG"](./assets/Capture_ansible_201.JPG)
+
+#### ***`main.yml`***
+```yml
+---
+- name: "Script Web Deployment"
+  become: yes
+  hosts: prod
+
+  tasks:
+    - include_tasks: install.yml
+      when: ansible_distribution == "Ubuntu"
+      loop:
+        - nginx
+        - git
+
+    - name: "Start nginx"
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+      when: ansible_distribution == "Ubuntu"
+
+- name: "Uninstall Nginx"
+  become: yes
+  hosts: prod
+  tags: uninstall
+
+  tasks:
+    - include_tasks: uninstall.yml
+      when: ansible_distribution == "Ubuntu"
+```
+#### ***`install.yml`***
+```yml
+---
+- name: "Install Applications"
+  apt:
+    name: "{{ item }}"
+    state: present
+
+- name: "Remove File index.html"
+  file:
+    path: /var/www/html/index.html
+    state: absent
+
+- name: "Create File"
+  copy:
+    content: "Omar Piotr BENNANI\n"
+    dest: /var/www/html/index.html
+```
+#### ***`uninstall.yml`***
+```yml
+---
+- name: "Desinstall Nginx"
+  apt:
+    name: nginx
+    state: absent
+    purge: yes
+    autoremove: yes
+```
+
+```bash
+# lancer uniquement l'installation
+ansible-playbook -i hosts.yml main.yml --skip-tags "uninstall"
+
+# lancer uniquement la désinstallation
+ansible-playbook -i hosts.yml main.yml --tags "uninstall"
+```
+
+# TP 14 : Import_playbook and Docker
+!["Capture_ansible_202.JPG"](./assets/Capture_ansible_202.JPG)
+## 1- via command
+* fichiers
+    * deploy_mario.yml (contient les includes des autres Playbook)
+    * docker.yml (Playbook : installation de docker)
+    * mario_cmd.yml (Playbook : lancement d'un contenaire docker via command)
+
+#### ***`deploy_mario.yml`***
+```yml
+---
+- import_playbook: "docker.yml"
+- import_playbook: "mario_cmd.yml"
+```
+#### ***`docker.yml`***
+```yml
+---
+- name: "Docker Installation"
+  become: yes
+  hosts: worker02
+
+  tasks:
+  - name: Download Install docker script
+    get_url:
+      url: "https://get.docker.com"
+      dest: /home/ubuntu/get-docker.sh
+
+  - name: run script to install docker
+    command: "sh /home/ubuntu/get-docker.sh"
+
+  - name: give the privilège to ubuntu
+    user:
+      name: ubuntu
+      append: yes
+      groups:
+        - docker
+```
+#### ***`mario_cmd.yml`***
+```yml
+---
+- name: "Docker Installation"
+  become: yes
+  hosts: worker01
+
+  tasks:
+    - name: "Execute Mario docker Script"
+      command: "docker run -d --name mario -p 8600:8080 pengbai/docker-supermario"
+```
+
+
+## 2- via module docker_container
+* prérequis : installer sur la machine cliente:
+    * python pip
+    * docker-py (via pip)
+* fichiers
+    * deploy_mario.yml (contient les includes des autres Playbook)
+    * docker.yml (Playbook : installation de docker)
+    * docker_pi.yml (Playbook : installation de pip et de docker-py via pip)
+    * mario_docker.yml (Playbook : lancement d'un contenaire le module docker_container)
+
+#### ***`deploy_mario.yml`***
+```yml
+---
+- import_playbook: "docker.yml"
+- import_playbook: "docker_pi.yml"
+- import_playbook: "mario_docker.yml"
+```
+
+#### ***`docker_pi.yml`***
+```yml
+---
+- name: "Docker Installation"
+  become: yes
+  hosts: prod
+
+  tasks:
+  - name: "Install python pip"
+    apt:
+        name: python3-pip
+        state: present
+    when: ansible_distribution == "Ubuntu"
+
+  - name: "Install docker-py module"
+    pip:
+        name: docker-py
+        state: present
+```
+
+#### ***`mario_docker.yml`***
+```yml
+---
+- name: "Docker Installation"
+  become: yes
+  hosts: worker02
+
+  tasks:
+    - name: "Create Mario container"
+      docker_container: 
+        name: mario
+        image: pengbai/docker-supermario
+        ports:
+          - "8600:8080"
+```
+
+
+# TP 15 : Container httpd avec static-website
+* Serveur Ansible
+    * créer le template pour le fichier index.html
+* Machine distante 
+    * Créer un dossier
+    * Clone le projet dessus
+    * Copier le template 
+
+!["Capture_ansible_204.JPG"](./assets/Capture_ansible_204.JPG)
+#### ***`webapp.yml`***
+```yml
+---
+- name: "Docker httpd container"
+  become: true
+  hosts: worker01
+
+  tasks:
+    - name: "Create directory"
+      file:
+        path: "/home/ubuntu/static-website"
+        state: directory
+
+    - name: "Git Clone"
+      git:
+        repo: "https://github.com/diranetafen/static-website-example.git"
+        dest: "/home/ubuntu/static-website"
+        force: yes
+
+    - name: "Copy Index File From Template"
+      template:
+        src: index.html.j2
+        dest: /home/ubuntu/static-website/index.html
+        
+    - name: "Create httpd container"
+      docker_container: 
+        name: webapp
+        image: httpd
+        ports:
+          - "80:80"
+        volumes:
+          - "/home/ubuntu/static-website:/usr/local/apache2/htdocs/"
+```
+
+# TP 16 : sécurité
+!["Capture_ansible_205.JPG"](./assets/Capture_ansible_205.JPG)
+
+## supprimer les mots de passes en utilisant la connexion ssh
+```bash
+# Mettre en commentaire les lignes dans les fichiers yml avec "ansible_password:"
+ansible -i hosts.yml all -m ping
+# échec
+
+# Télécharger puis changer le mode de la clé:
+sudo chmod 400 omar-kp-ajc.pem
+
+# Commande impératives :
+ansible -i hosts.yml all -m ping --private-key "/home/ubuntu/omar-kp-ajc.pem"
+ansible -i hosts.yml all -m ping --key-file "/home/ubuntu/omar-kp-ajc.pem"
+
+```
+* Ajouter la variable dans nos fichier .yml afin de ne plus spécifier la clé dans la ligne de commande
+### ***`Nos fichiers YAML`***
+```yml
+vars:
+    ansible_ssh_private_key_file: "/home/ubuntu/omar-kp-ajc.pem"
+```
+
+## crypter des donnée avec Ansible-volt
+* créer un fichier secretes.yml contenat les variables sensibles
+* encypter le fichier à l'aide de ansible-vault encrypt
+    * pass / confirm
+* ajouter vars_files dans notre playbook
+* bonne pratiques
+    * créer des variables `_vault_` dans notre fichier encrypté
+    * appeler ces variables `_vault_` depuis nos "manifests"
+
+#### ***`secret.yml`***
+```yml
+ansible_vault_user: ubuntu
+ansible_vault_sudo_pass: ubuntu
+```
+#### ***`/group/vars/prod.yml`***
+```yml
+ansible_user: "{{ ansible_vault_user }}"
+ansible_sudo_pass: "{{ ansible_vault_sudo_pass }}"
+ansible_ssh_common_args: -o StrictHostKeyChecking=no
+ansible_ssh_private_key_file: "/home/ubuntu/omar-kp-ajc.pem"
+```
+#### ***`webapp.yml : rajouter les vars_files`***
+```yml
+---
+- name: "Docker httpd container" 
+  hosts: worker01  
+  vars_files:
+    - "./secrets.yml"
+
+  tasks:
+  ...
+```
+
+```bash
+# Encypter le fichier secrets.yml:
+ansible-vault encrypt secrets.yml
+
+# lancer le playbook avec l'option --ask-vault-password
+ansible-playbook -i hosts.yml webapp.yml --ask-vault-password
+
+# Si besoin de modifier le fichier secretes il faut le décrypter:
+ansible-vault decrypt secrets.yml
+```
+
+## Fichier de configuration
+* Priorité :
+    * 1- Variables d'environnement : ANSIBLE_CONF
+    * 2- Projet : /[Projec_Path]/ansible.cfg
+    * 3- Home : /home/[user]/ansible.cfg
+    * 4- défaut : /etc/ansible/ansible.cfg
+* ansible.cfg est un fichier de type ini
+* Chercher dans ansible configuration
+    * https://docs.ansible.com/ansible/latest/reference_appendices/config.html
+
+
+* Exemple :
+    * spécifier l'inventaire pour ne plus écrire -i hosts.yml
+    * activer le vault par défaut pour supprimer l'option --ask-vault-password
+    * monter les privilège par défaut (become: true) 
+
+#### ***`ansible.cfg`*** 
+```ini
+[defaults]
+inventory=/home/ubuntu/TP16/hosts.yml
+ask_vault_pass = true
+
+[privilege_escalation]
+become=true
+```
+
+```bash
+# vérifier que le config est bien pris en compte
+ansible --version
+
+# ansible-playbook -i hosts.yml webapp.yml --ask-vault-password 
+ansible-playbook webapp.yml
+```
+
+* on pourrait rajouter la private_key par défaut :
+```ini
+[default]
+private_key_file=/home/ubuntu/omar-kp-ajc.pem
+```

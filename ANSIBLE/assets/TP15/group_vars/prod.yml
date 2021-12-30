@@ -1,0 +1,5 @@
+env: prod
+ansible_user: ubuntu
+ansible_password: ubuntu
+#ansible_sudo_pass: ubuntu
+ansible_ssh_common_args: -o StrictHostKeyChecking=no

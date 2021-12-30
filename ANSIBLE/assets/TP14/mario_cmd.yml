@@ -1,0 +1,8 @@
+---
+- name: "Docker Installation"
+  become: yes
+  hosts: worker01
+
+  tasks:
+    - name: "Execute Mario docker Script"
+      command: "docker run -d --name mario -p 8600:8080 pengbai/docker-supermario"

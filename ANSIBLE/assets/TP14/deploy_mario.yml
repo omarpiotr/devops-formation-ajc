@@ -1,0 +1,4 @@
+---
+- import_playbook: "docker.yml"
+- import_playbook: "docker_pi.yml"
+- import_playbook: "mario_docker.yml"

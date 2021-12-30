@@ -1,0 +1,20 @@
+---
+- name: "Docker Installation"
+  become: yes
+  hosts: worker02
+
+  tasks:
+  - name: Download Install docker script
+    get_url:
+      url: "https://get.docker.com"
+      dest: /home/ubuntu/get-docker.sh
+
+  - name: run script to install docker
+    command: "sh /home/ubuntu/get-docker.sh"
+
+  - name: give the privilège to ubuntu
+    user:
+      name: ubuntu
+      append: yes
+      groups:
+        - docker

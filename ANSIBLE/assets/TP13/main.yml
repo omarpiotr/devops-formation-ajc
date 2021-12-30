@@ -1,0 +1,27 @@
+---
+- name: "Script Web Deployment"
+  become: yes
+  hosts: prod
+
+  tasks:
+    - include_tasks: install.yml
+      when: ansible_distribution == "Ubuntu"
+      loop:
+        - nginx
+        - git
+
+    - name: "Start nginx"
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+      when: ansible_distribution == "Ubuntu"
+
+- name: "Uninstall Nginx"
+  become: yes
+  hosts: prod
+  tags: uninstall
+
+  tasks:
+    - include_tasks: uninstall.yml
+      when: ansible_distribution == "Ubuntu"

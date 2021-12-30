@@ -1,0 +1,13 @@
+---
+- name: "Docker Installation"
+  become: yes
+  hosts: worker01
+
+  tasks:
+    - name: "Copy Docker Install Script "
+      template:
+        src: "docker_install.sh.j2"
+        dest: "/home/{{ ansible_user }}/docker_install.sh"
+ 
+    - name: "Execute Install Script"
+      command: "sh /home/{{ ansible_user }}/docker_install.sh"
