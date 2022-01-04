@@ -1,0 +1,10 @@
+---
+- name: "deploy docker installation with a role"
+  hosts: prod
+  tasks:
+    - name: "Create Mario container"
+      docker_container: 
+        name: mario
+        image: pengbai/docker-supermario
+        ports:
+        - "8600:8080"

@@ -1,0 +1,17 @@
+---
+namespace: community
+name: docker_role
+version: 1.0.1
+readme: README.md
+authors:
+  - Omar Piotr
+description: Install docker_container for Ansible
+license_file: COPYING
+tags:
+  - v1
+repository: https://github.com/omarpiotr/docker_role.git
+documentation: https://github.com/omarpiotr/docker_role.git
+homepage: https://github.com/omarpiotr/docker_role.git
+issues: https://github.com/omarpiotr/docker_role.git
+build_ignore:
+  - .gitignore

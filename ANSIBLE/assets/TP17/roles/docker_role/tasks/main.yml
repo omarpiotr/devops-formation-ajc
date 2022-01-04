@@ -1,0 +1,66 @@
+---
+# tasks file for docker_role
+- name : "Install Docker from templated script"
+  template:
+    src: "docker_install.sh.j2"
+    dest: "/home/{{ ansible_user }}/docker_install.sh"
+  when : ansible_docker0 is undefined and (ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu")
+
+- name: "Execute Install Script"
+  command: "sh /home/{{ ansible_user }}/docker_install.sh"
+  when : ansible_docker0 is undefined and (ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu")
+
+- name: "give the privilège to the user"
+  user:
+    name: "{{ ansible_user }}"
+    append: yes
+    groups:
+      - docker
+  when: ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu"
+
+- name : "Start and Enable docker service"
+  service:
+    name: docker
+    enabled: yes
+    state: started
+  when: ansible_distribution == "CentOS"
+
+# Docker-py Installation for CENTOS
+
+- name : "Install epel-releases"
+  yum:
+    name: epel-release
+    state: present
+  when: ansible_distribution == "CentOS"
+
+- name: download pip script
+  get_url:
+    url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
+    dest: /tmp/get-pip.py
+  when: ansible_distribution == "CentOS"
+
+- name: "install python-pip"
+  command: python2.7 /tmp/get-pip.py
+  when: ansible_distribution == "CentOS"
+
+- name: "Install docker python"
+  pip: 
+    name: docker-py
+    state: present
+  when: ansible_distribution == "CentOS"
+
+# Docker-py Installation for Ubuntu
+
+- name : "Install python pip3 for ubuntu"
+  package:
+    name: python3-pip
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: "Install docker-py via pip Ubuntu"
+  pip:
+    name: docker-py
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+

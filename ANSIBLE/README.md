@@ -883,3 +883,115 @@ ansible-playbook webapp.yml
 [default]
 private_key_file=/home/ubuntu/omar-kp-ajc.pem
 ```
+# TP 17 : Les roles
+## docker_role en local
+```bash
+# créer un role "docker_role" cela va créer un repertoire avec tout ce dont on a besoin
+ansible-galaxy role init docker_role
+```
+#### ***`roles/docker_role/tasks/main.yml`***
+```yml
+---
+# tasks file for docker_role
+- name : "Install Docker from templated script"
+  template:
+    src: "docker_install.sh.j2"
+    dest: "/home/{{ ansible_user }}/docker_install.sh"
+  when : ansible_docker0 is undefined and (ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu")
+
+- name: "Execute Install Script"
+  command: "sh /home/{{ ansible_user }}/docker_install.sh"
+  when : ansible_docker0 is undefined and (ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu")
+
+- name: "give the privilège to the user"
+  user:
+    name: "{{ ansible_user }}"
+    append: yes
+    groups:
+      - docker
+  when: ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu"
+
+- name : "Start and Enable docker service"
+  service:
+    name: docker
+    enabled: yes
+    state: started
+  when: ansible_distribution == "CentOS"
+
+# Docker-py Installation for CENTOS
+
+- name : "Install epel-releases"
+  yum:
+    name: epel-release
+    state: present
+  when: ansible_distribution == "CentOS"
+
+- name: download pip script
+  get_url:
+    url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
+    dest: /tmp/get-pip.py
+  when: ansible_distribution == "CentOS"
+
+- name: "install python-pip"
+  command: python2.7 /tmp/get-pip.py
+  when: ansible_distribution == "CentOS"
+
+- name: "Install docker python"
+  pip: 
+    name: docker-py
+    state: present
+  when: ansible_distribution == "CentOS"
+
+# Docker-py Installation for Ubuntu
+
+- name : "Install python pip3 for ubuntu"
+  package:
+    name: python3-pip
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: "Install docker-py via pip Ubuntu"
+  pip:
+    name: docker-py
+    state: present
+  when: ansible_distribution == "Ubuntu"
+```
+
+#### ***`playbook.yml`***
+```yml
+---
+- name: "deploy docker installation with a role"
+  hosts: prod
+  roles:
+    - docker_role
+```
+
+## docker_role from Galaxy (TP17-bis)
+```bash
+# installation d'un rôle depuis la ansible galaxy
+ansible-galaxy install omarpiotr.docker_role
+# ou
+ansible-galaxy install -r requirement.yml
+```
+#### ***`requirement.yml`***
+```yml
+- src: omarpiotr.docker_role
+```
+
+#### ***`playbook.yml`***
+```yml
+---
+- name: "deploy docker installation with a role from Ansible Galaxy"
+  hosts: prod
+  roles:
+    - omarpiotr.docker_role
+```
+
+https://github.com/omarpiotr/docker_role<br>
+https://galaxy.ansible.com/omarpiotr/docker_role
+
+# TP 18 : miniprojet Wordpress and MySql via containers
+* Code source du role
+    * https://github.com/omarpiotr/wordpress_role
+    * https://galaxy.ansible.com/omarpiotr/wordpress_role
+* Exemple d'utilisation [(TP18)](https://github.com/omarpiotr/devops-formation-ajc/tree/master/ANSIBLE/assets/TP18)

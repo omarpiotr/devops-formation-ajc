@@ -1,0 +1,7 @@
+---
+- name: "deploy Wordpress with a role"
+  hosts: prod
+  roles:
+    - omarpiotr.docker_role
+    - omarpiotr.wordpress_role
+  

@@ -1,0 +1,6 @@
+---
+- name: "deploy docker installation with a role"
+  hosts: prod
+  roles:
+    - docker_role
+  
