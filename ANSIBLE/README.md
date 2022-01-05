@@ -995,3 +995,87 @@ https://galaxy.ansible.com/omarpiotr/docker_role
     * https://github.com/omarpiotr/wordpress_role
     * https://galaxy.ansible.com/omarpiotr/wordpress_role
 * Exemple d'utilisation [(TP18)](https://github.com/omarpiotr/devops-formation-ajc/tree/master/ANSIBLE/assets/TP18)
+
+
+# Tower (AWX)
+## Instance EC2
+* t2.medium minimum
+* ports80
+
+## Créer le projet Git
+* on ne va pas lié tower au role mais au projet de déploiement
+* mettre le "roles/requirements.yml" (permet de spécifier les sources à tower afin de télécharger les rôles nécessaires)
+
+## Tower
+* login : admin
+* mdp : password
+
+### Projet TOWER
+!["Capture_ansible_501.JPG"](./assets/Capture_ansible_501.JPG)
+* Tower : créer un projet
+* Deploy_wordpress_project
+* TYPE SCM : Git : 
+    * URL de notre git
+    * branche Master
+        * option de MAJ : mettre à jour révision au lancement
+    * Enregistrer
+* Vérifier que la syncho avec Git est OK :
+!["Capture_ansible_502.JPG"](./assets/Capture_ansible_502.JPG)
+
+
+### Créer l'inventaire
+* Créer l'inventaire ==> + inventaire static
+    * Nom : inventory_wordpress
+    * variables : on peu surcharges les variables
+    * Enregistrer
+    * Onglet source ==> créer une nouvelle source
+        * inventory_src_wordpress
+        * provenance d'un projet
+        * projet: deploy_wordpress_project (mettre à jour au lancement)
+        * Fichier d'inventaire : hosts.yml
+        * Enregistrer
+
+    !["Capture_ansible_503.JPG"](./assets/Capture_ansible_503.JPG)    
+    * cliquer en bas sur la synchro de notre inventaire"inventory_src_wordrepss"
+    * onglet Hotes : on retrouve nos hosts
+
+    !["Capture_ansible_504.JPG"](./assets/Capture_ansible_504.JPG)
+
+(on peu créer nos script d'inventaire)
+
+### Créer les crédentials
+* Crédentials : Information d'identification
+* Créer :
+    * wordpress_vault
+    * Type Vault : coffre-fort
+    * orgainsation : Default
+    * mettre mdp sécurisé
+    * pas besoi de user pour le vault
+* Créer nouveau:
+    * hosts_prod_id
+    * type: Machine
+    * organisation : Default
+    * Nom Utilisateur
+    * mdp ou clé
+    * Méthode d'escalade de privilège : Sudo
+    * (MDP pour elevation privilège : pas besoin)
+    * Enregistrer
+### Les JOBs
+* job voir les jobs
+* créer un JOB : Modèles:
+* Modèle de Job simple
+    * Nom : deploy_wordpress_job
+    * type : Exécuter
+    * Inventaire : Inventory_wordpress
+    * Projet: deploy_wordpress_project
+    * Playbook: wordpress.yml
+    * Information d'identification : type machine : hosts_prod_id  +  vault
+    * Activer l'elevation des privilèges
+    * Enregistrer
+
+!["Capture_ansible_505.JPG"](./assets/Capture_ansible_505.JPG)
+
+* Lancer le job : Modèle / job / fusée
+* Tableau de bord : on voit les echecs et les réussites
+
+!["Capture_ansible_506.JPG"](./assets/Capture_ansible_506.JPG)
