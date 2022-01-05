@@ -1062,6 +1062,7 @@ https://galaxy.ansible.com/omarpiotr/docker_role
     * Méthode d'escalade de privilège : Sudo
     * (MDP pour elevation privilège : pas besoin)
     * Enregistrer
+
 ### Les JOBs
 * job voir les jobs
 * créer un JOB : Modèles:
@@ -1081,3 +1082,22 @@ https://galaxy.ansible.com/omarpiotr/docker_role
 * Tableau de bord : on voit les echecs et les réussites
 
 !["Capture_ansible_506.JPG"](./assets/Capture_ansible_506.JPG)
+
+chaque job template peu avoir un webb hook :
+* Enable Webbhook
+* type Github
+* URL
+* Enregistrer ==> webhook key
+
+### WebHook
+* Modèle ==> Selectionner notre Job
+    * Options
+        * cocher : Enable Webhook
+        * webhook service GitHub 
+        * webhook URL
+        * Enregistrer ==> générer webhook key
+
+!["Capture_ansible_507.JPG"](./assets/Capture_ansible_507.JPG)
+
+* Ajouter le webhook sur Github 
+!["Capture_ansible_508.JPG"](./assets/Capture_ansible_508.JPG)
