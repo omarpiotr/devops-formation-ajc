@@ -997,14 +997,16 @@ https://galaxy.ansible.com/omarpiotr/docker_role
 * Exemple d'utilisation [(TP18)](https://github.com/omarpiotr/devops-formation-ajc/tree/master/ANSIBLE/assets/TP18)
 
 
-# Tower (AWX)
+# TP 19 : Tower (AWX)
 ## Instance EC2
 * t2.medium minimum
-* ports80
+* ports: 80
+* Installation : https://github.com/omarpiotr/ansible_tower.git
 
 ## Créer le projet Git
 * on ne va pas lié tower au role mais au projet de déploiement
 * mettre le "roles/requirements.yml" (permet de spécifier les sources à tower afin de télécharger les rôles nécessaires)
+* https://github.com/omarpiotr/ansible-deploy-wordpress.git
 
 ## Tower
 * login : admin
