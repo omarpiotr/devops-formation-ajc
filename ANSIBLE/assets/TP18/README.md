@@ -160,7 +160,11 @@ all:
 ```
 
 ```bash
+# depuis le master
 ansible-playbook playbook.yml
+
+# tester si le lien est bien fait depuis un worker
+docker inspect wordpress -f "{{ .HostConfig.Links }}"
 ```
 !["Capture_ansible_403.JPG"](./assets/Capture_ansible_403.JPG)<br><br>
 !["Capture_ansible_404.JPG"](./assets/Capture_ansible_404.JPG)
