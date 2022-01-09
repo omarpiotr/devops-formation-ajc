@@ -1,0 +1,15 @@
+Worker : i-085350625351ab123 - 3.88.223.184 - us-east-1b 
+Ansible Master : i-0eb9990fb889e66c4 - 34.205.84.16 - us-east-1a 
+Worker : i-08db0534a548c00fb - 18.212.1.176 - us-east-1b 
+Ansible Master : i-04d11df2a38e85aa4 - 44.201.65.65 - us-east-1a 
+Ansible Master : i-0c8cbb0ec806f9571 - 3.239.80.159 - us-east-1a 
+Ansible Master : i-08cfc7ec313307f6f - 44.197.118.142 - us-east-1a 
+Worker : i-0ca02314f781e3d8c - 52.91.194.229 - us-east-1b 
+Ansible Master : i-01897ee91d69c40ce - 3.238.67.11 - us-east-1a 
+Ansible Master : i-0c835a2da2a0120e8 - 3.92.6.133 - us-east-1a 
+Worker : i-09b9d940beb6ca185 - 54.174.100.198 - us-east-1b 
+Ansible Master : i-01102dc7ed32fbc7e - 44.200.163.193 - us-east-1a 
+Worker : i-0644cf2ae086f6aa6 - 18.233.9.93 - us-east-1b 
+Ansible Master : i-0d0a9868b49c153cd - 3.216.93.104 - us-east-1a 
+Ansible Master : i-0bdcd17b6bb67f1ce - 34.206.3.79 - us-east-1a 
+Ansible Master : i-010c02d178580a3bd - 44.200.0.114 - us-east-1a 

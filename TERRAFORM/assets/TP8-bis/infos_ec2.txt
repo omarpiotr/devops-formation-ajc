@@ -1,0 +1,8 @@
+Ansible Master : i-05790d4bfb0ef52b1 - 44.192.59.115 - us-east-1a 
+Ansible Master : i-0eec918cf79493c96 - 44.195.82.224 - us-east-1a 
+Ansible Master : i-0f56675187a2688dd - 44.195.49.234 - us-east-1a 
+Ansible Master : i-08a71df9d367ebbb9 - 3.237.86.106 - us-east-1a 
+Ansible Master : i-0e3313143f5bc41d6 - 3.237.200.149 - us-east-1a 
+Ansible Master : i-05f9e3877f88fcb8c - 3.239.204.204 - us-east-1a 
+Ansible Master : i-0f10ce31e84de25d1 - 3.236.29.163 - us-east-1a 
+Ansible Master : i-0ff3c701f67ec6997 - 44.193.2.20 - us-east-1a 
