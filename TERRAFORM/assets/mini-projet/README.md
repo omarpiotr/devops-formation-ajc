@@ -5,14 +5,15 @@ Dans mon cas, je préfère réaliser le travail étape par étape avant de tout 
 * Module eip
 * Module ebs
 * Module ec2
-On va variabiliser au maximu
+
+On va variabiliser au maximum 
 
 ## Mise en place du sécurité groupe
 * on peut :
     * variable : surcharger le nom du sécurity group
     * output : récupérer le nom de notre sécurity group qui sera attaché a l'instance EC2
 #### ***`modules/sg/sg.tf`***
-```json
+```javascript
 resource "aws_security_group" "web-sg" {
   name = var.sg_name
   description = "Allow inbound traffic with port 22 & 80 & 443"
@@ -51,7 +52,7 @@ resource "aws_security_group" "web-sg" {
 }
 ```
 #### ***`modules/sg/variables.tf`***
-```json
+```javascript
 variable "sg_name" {
   default = "omar-sg-web"
 }
@@ -67,7 +68,7 @@ output "sg_name" {
     * eip_id: id de notre ip elastique qui sera utilisé pour l'association avec l'instance EC2
     * eip_ip : ip elastique que l'on fournira à la variable static_ip de notre instance EC2
 #### ***`modules/eip/eip.tf`***
-```json
+```javascript
 resource "aws_eip" "ec2_EIP" {
   vpc      = true
 
@@ -79,7 +80,7 @@ resource "aws_eip" "ec2_EIP" {
 }
 ```
 #### ***`modules/eip/variables.tf`***
-```json
+```javascript
 variable "eip_tag_name" {
   default = "omar-eip-web"
 }
@@ -100,7 +101,7 @@ output "eip_ip" {
     * zone de disponibilité : il faut qu'il soit le même que celui de notre EC2
 * output : id du notre ebs volume qui sera utilisé pour l'association avec notre EC2
 #### ***`modules/ebs/ebs.tf`***
-```json
+```javascript
 resource "aws_ebs_volume" "ec2_EBS" {
   availability_zone = var.zone_disponibilite
   size              = var.ebs_size
@@ -113,7 +114,7 @@ resource "aws_ebs_volume" "ec2_EBS" {
 }
 ```
 #### ***`modules/ebs/variables.tf`***
-```json
+```javascript
 variable "ebs_tag_name" {
   default = "omar-ebs-web"
 }
@@ -144,7 +145,7 @@ output "ebs_id" {
     * static_ip : ip static que l'on va récupérer depuis notre IP elastique (depuis sont output) car l'association entre l'EC2 et l'EIP ne se fera que plus tard, et c'est cette valeur qui sera mise dans le fichier "ip_ec2.txt"
 * output : ec2_id id de notre instance
 #### ***`modules/ec2/ec2.tf`***
-```json
+```javascript
 resource "aws_instance" "myec2" {
   ami             = var.ami
   instance_type   = var.instance_type
@@ -181,7 +182,7 @@ resource "aws_instance" "myec2" {
 }
 ```
 #### ***`modules/ec2/variables.tf`***
-```json
+```javascript
 variable "ami" {
   default = "ami-04505e74c0741db8d"
   type    = string
@@ -226,7 +227,7 @@ output "ec2_id" {
 
 ## Le projet App qui consomme tous les modules
 #### ***`app/data_ami.tf`***
-```json
+```javascript
 data "aws_ami" "app_ami" {
   most_recent = true
   owners      = ["099720109477"]
@@ -238,14 +239,14 @@ data "aws_ami" "app_ami" {
 }
 ```
 #### ***`app/provider.tf`***
-```json
+```javascript
 provider "aws" {
   region     = "us-east-1"
   shared_credentials_file = "D:/Formation/AJC/05.DevOps/10-TERRAFORM/.aws/credentials"
 }
 ```
 #### ***`app/main.tf`***
-```json
+```javascript
 module "deploy_sg" {
   source = "../modules/sg"
   sg_name = "omar-sg-miniprojet"

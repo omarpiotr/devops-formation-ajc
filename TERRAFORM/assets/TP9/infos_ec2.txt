@@ -1,0 +1,2 @@
+Worker : i-0f86bcf5fff89a9ca - 44.202.34.42 - us-east-1b 
+Ansible Master : i-0da86914d9752ed8f - 44.193.203.157 - us-east-1a 
