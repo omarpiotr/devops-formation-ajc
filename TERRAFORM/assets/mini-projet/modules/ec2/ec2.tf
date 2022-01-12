@@ -4,6 +4,11 @@ resource "aws_instance" "myec2" {
   key_name        = var.key_name
   security_groups = [var.sg_name]
   availability_zone = var.zone_disponibilite
+
+  # supprimer le disque EBS système lorsque l'instance est supprimée
+  root_block_device {
+    delete_on_termination = true
+  }
   
   tags = {
     Name      = "ec2-${var.env}-omar"
