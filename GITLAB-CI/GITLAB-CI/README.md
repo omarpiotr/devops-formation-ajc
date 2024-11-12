@@ -1,3 +1,64 @@
+# Setup GITLAB server
+## 1- GITLAB-CI server with docker
+```yml
+services:
+  gitlab:
+    image: gitlab/gitlab-ce
+    hostname: gitlab
+    container_name: gitlab
+    networks:
+      - gitlabnet
+    ports:
+      - '8088:80'
+      - '8443:443'
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+    # shm_size: '256m'
+networks:
+  gitlabnet:
+    name: gitlabnet
+    driver: bridge
+volumes:
+  gitlab_data:
+  gitlab_config:
+  gitlab_logs:
+```
+
+## 2.1 Create a shell runner (on VM ubuntu server LTS)
+* Deprecated usage (use token instead of registration token)
+* Get the Registration token from :Gitlab web page > Admin > CICD > Runners : `${REGISTRATION_TOKEN}`
+* GitlabCI server web URL to call from the runner : `${GITLAB_URL}`
+```bash
+# Download the binary for your system
+sudo curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+
+# Give it permission to execute
+sudo chmod +x /usr/local/bin/gitlab-runner
+
+# Create a GitLab Runner user
+sudo useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash
+
+# Install and run as a service
+sudo gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+sudo gitlab-runner start
+
+# Command to register runner (shell executor)
+sudo gitlab-runner register --url http://${GITLAB_URL}/ --registration-token ${REGISTRATION_TOKEN}
+# > Enter the GitLab instance URL
+# > Enter the registration token
+# > Enter a description for the runner
+# > Enter tags for the runner
+# > Enter optional maintenance note for the runner
+# > Enter an executor: custom, parallels, docker-windows, kubernetes, shell, ssh, virtualbox, docker, docker+machine, docker-autoscaler, instance
+```
+ 
+
+## 2.2 Create a docker runner
+
+
+
 https://gitlab.com/omarpiotr/alpinehelloworld-ajc
 
 --------

@@ -1,0 +1,26 @@
+version: '3.6'
+services:
+  gitlab:
+    image: gitlab/gitlab-ce
+    hostname: gitlab
+    container_name: gitlab
+    networks:
+      - gitlabnet
+    ports:
+      - '8088:80'
+      - '8443:443'
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+    # shm_size: '256m'
+
+networks:
+  gitlabnet:
+    name: gitlabnet
+    driver: bridge
+
+volumes:
+  gitlab_data:
+  gitlab_config:
+  gitlab_logs:
