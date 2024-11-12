@@ -1,6 +1,8 @@
 services:
   sonarqube:
     image: sonarqube:lts-community
+    networks:
+      - sonarnet
     hostname: sonarqube
     container_name: sonarqube
     read_only: true
@@ -20,6 +22,8 @@ services:
       - "8090:9000"
   db:
     image: postgres:17
+    networks:
+      - sonarnet
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
@@ -34,6 +38,11 @@ services:
     volumes:
       - postgresql:/var/lib/postgresql
       - postgresql_data:/var/lib/postgresql/data
+
+networks:
+  sonarnet:
+    name: sonarnet
+    driver: bridge
 
 volumes:
   sonarqube_data:
