@@ -60,11 +60,22 @@ sudo gitlab-runner register --url http://${GITLAB_URL}/ --registration-token ${R
 # > Enter optional maintenance note for the runner
 # > Enter an executor: custom, parallels, docker-windows, kubernetes, shell, ssh, virtualbox, docker, docker+machine, docker-autoscaler, instance
 ```
+
+The runner configuration is stored in `config.toml` file and can be found in:
+* `/etc/gitlab-runner/` folder, on *nix systems when GitLab Runner is executed as root. This directory is also the path for service configuration.
+* `~/.gitlab-runner/` folder, on *nix systems when GitLab Runner is executed as non-root.
+* `./` folder, on other systems. 
+
+Next values can ben changed :
+* oncurrent = 3
+* check_interval = 1
+
  
 
 ## 2.2 Create a docker runner
+TODO
 
-
+--------
 
 https://gitlab.com/omarpiotr/alpinehelloworld-ajc
 

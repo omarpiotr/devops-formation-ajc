@@ -6,6 +6,8 @@ services:
     container_name: gitlab
     networks:
       - gitlabnet
+    environment:
+      GITLAB_ROOT_PASSWORD : 'Abcd@0123456789'
     ports:
       - '8088:80'
       - '8443:443'
