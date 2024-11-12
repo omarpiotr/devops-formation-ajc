@@ -9,8 +9,8 @@ services:
     networks:
       - gitlabnet
     ports:
-      - '8088:80'
-      - '8443:443'
+      - '80:80'
+      - '443:443'
     volumes:
       - gitlab_config:/etc/gitlab
       - gitlab_logs:/var/log/gitlab
@@ -25,6 +25,13 @@ volumes:
   gitlab_config:
   gitlab_logs:
 ```
+* Note: **The first launch of the portal may take several minutes.**
+* Default admin user is : **root**
+* Default admin password
+  * Can be set using the environement variable `GITLAB_ROOT_PASSWORD`
+  * Can be found 
+    * in the gitlab container in file `/etc/gitlab/initial_root_password`
+    * using the command `docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password`
 
 ## 2.1 Create a shell runner (on VM ubuntu server LTS)
 * Deprecated usage (use token instead of registration token)
