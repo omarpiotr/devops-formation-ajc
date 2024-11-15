@@ -71,7 +71,7 @@ Next values can ben changed :
 * check_interval = 1
 
 ### TROUBLESHOOTING 
-Prevent from `Job failed: prepare environment: exit status 1`** 
+Prevent from `Job failed: prepare environment: exit status 1`
 
 comment code in `/home/gitlab-runner/.bash_logout`
 ```bash
