@@ -89,6 +89,10 @@ fi
 ## 2.2 Create a docker runner
 TODO
 
+## 2.3 Configure Runner
+* To enable the runner to run without tags :
+  * From admin interface
+  * CICD > Runners > Select runner > edit > check : Run untagged jobs 
 --------
 
 https://gitlab.com/omarpiotr/alpinehelloworld-ajc
