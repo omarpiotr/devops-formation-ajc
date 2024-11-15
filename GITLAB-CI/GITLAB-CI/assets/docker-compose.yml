@@ -2,14 +2,16 @@ version: '3.6'
 services:
   gitlab:
     image: gitlab/gitlab-ce
-    hostname: gitlab
-    container_name: gitlab
+    hostname: mygitlab
+    container_name: mygitlab
     networks:
       - gitlabnet
     environment:
       GITLAB_ROOT_PASSWORD : 'Abcd@0123456789'
+      GITLAB_OMNIBUS_CONFIG : |
+        external_url 'http://mygitlab:8088'
     ports:
-      - '8088:80'
+      - '8088:8088'
       - '8443:443'
     volumes:
       - gitlab_config:/etc/gitlab
