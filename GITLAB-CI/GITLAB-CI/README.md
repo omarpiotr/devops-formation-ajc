@@ -70,6 +70,20 @@ Next values can ben changed :
 * oncurrent = 3
 * check_interval = 1
 
+### TROUBLESHOOTING 
+Prevent from `Job failed: prepare environment: exit status 1`** 
+
+comment code in `/home/gitlab-runner/.bash_logout`
+```bash
+# ~/.bash_logout: executed by bash(1) when login shell exits.
+# when leaving the console clear the screen to increase privacy
+
+if [ "$SHLVL" = 1 ]; then
+    [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
+fi
+```
+
+
  
 
 ## 2.2 Create a docker runner
