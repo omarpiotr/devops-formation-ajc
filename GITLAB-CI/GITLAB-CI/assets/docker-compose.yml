@@ -2,6 +2,7 @@ version: '3.6'
 services:
   gitlab:
     image: gitlab/gitlab-ce
+    restart: always
     hostname: mygitlab
     container_name: mygitlab
     networks:
@@ -19,6 +20,18 @@ services:
       - gitlab_data:/var/opt/gitlab
     # shm_size: '256m'
 
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    restart: always
+    container_name: gitlab-runner 
+    depends_on:
+      - gitlab
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock
+      - gitlab-runner_dat:/etc/gitlab-runner
+    networks:
+      - gitlabnet
+
 networks:
   gitlabnet:
     name: gitlabnet
@@ -28,3 +41,4 @@ volumes:
   gitlab_data:
   gitlab_config:
   gitlab_logs:
+  gitlab-runner_data:
