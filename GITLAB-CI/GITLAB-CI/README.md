@@ -82,17 +82,167 @@ if [ "$SHLVL" = 1 ]; then
     [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
 fi
 ```
+### `.gitlab-ci.yml`
+```yml
+build-job:
+  stage: build
+  script:
+    - echo "Hello, $GITLAB_USER_LOGIN!"
 
+test-job1:
+  stage: test
+  script:
+    - echo "This job tests something"
+
+test-job2:
+  stage: test
+  script:
+    - echo "This job tests something, but takes more time than test-job1."
+    - echo "After the echo commands complete, it runs the sleep command for 20 seconds"
+    - echo "which simulates a test that runs 20 seconds longer than test-job1"
+    - sleep 20
+
+deploy-prod:
+  stage: deploy
+  script:
+    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
+  environment: production
+```
 
  
 
 ## 2.2 Create a docker runner
-TODO
+* Deprecated usage (use token instead of registration token)
+* Get the Registration token from :Gitlab web page > Admin > CICD > Runners : `${REGISTRATION_TOKEN}`
+* GitlabCI server web URL to call from the runner : `${GITLAB_URL}` (ex http://mygitlab:8088/)
+* Gitlab-ce docker network : `${GITLAB_NETWORK}` (ex: gitlabnet)
+* Docker engine socket `${DOCKER_SOCK}`:
+  * //var/run/docker.sock (for windows)
+  * /var/run/docker.sock (for linux)
+```bash
+# Pull the image of gitlab-runner
+docker pull gitlab/gitlab-runner:latest
+# Run the container on the same network than gitlab-ce container and share the docker socket to pull images
+docker run -d --network ${GITLAB_NETWORK} --name runner-docker -v "${DOCKER_SOCK}:/var/run/docker.sock" gitlab/gitlab-runner:latest
+#Example
+docker run -d --network gitlabnet --name runner-docker -v "//var/run/docker.sock:/var/run/docker.sock" gitlab/gitlab-runner:latest
 
-## 2.3 Configure Runner
+# Connect to the runner container
+docker exec -it doc-runner /bin/bash
+# Register the container
+gitlab-runner register \
+  --non-interactive \
+  --url ${GITLAB_URL} \
+  --registration-token ${REGISTRATION_TOKEN} \
+  --executor "docker" \
+  --docker-network-mode ${GITLAB_NETWORK} \
+  --docker-image "ubuntu:20.04" \
+  --description "docker-runner ubuntu" \
+  --tag-list "docker,ubuntu:20.04"
+```
+### `.gitlab-ci.yml`
+```yaml
+default:
+  image: alpine:latest
+  before_script:
+    - cat /etc/os-release
+
+build-job:
+  stage: build
+  script:
+    - echo "Hello, $GITLAB_USER_LOGIN!"
+
+test-job1:
+  stage: test
+  script:
+    - echo "This job tests something"
+
+test-job2:
+  stage: test
+  script:
+    - echo "This job tests something, but takes more time than test-job1."
+    - echo "After the echo commands complete, it runs the sleep command for 20 seconds"
+    - echo "which simulates a test that runs 20 seconds longer than test-job1"
+    - sleep 20
+
+deploy-prod:
+  stage: deploy
+  script:
+    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
+  environment: production
+```
+
+## 2.3 Create a docker runner for docker operations(dind)
+* Deprecated usage (use token instead of registration token)
+* Get the Registration token from :Gitlab web page > Admin > CICD > Runners : `${REGISTRATION_TOKEN}`
+* GitlabCI server web URL to call from the runner : `${GITLAB_URL}` (ex http://mygitlab:8088/)
+* Gitlab-ce docker network : `${GITLAB_NETWORK}` (ex: gitlabnet)
+* Docker engine socket `${DOCKER_SOCK}`:
+  * //var/run/docker.sock (for windows)
+  * /var/run/docker.sock (for linux)
+```bash
+# Pull the image of gitlab-runner
+docker pull gitlab/gitlab-runner:latest
+# Run the container on the same network than gitlab-ce container and share the docker socket to pull images
+docker run -d --network ${GITLAB_NETWORK} --name runner-docker -v "${DOCKER_SOCK}:/var/run/docker.sock" gitlab/gitlab-runner:latest
+
+# Connect to the runner container
+docker exec -it doc-runner /bin/bash
+# Register the container
+gitlab-runner register \
+  --non-interactive \
+  --url ${GITLAB_URL} \
+  --registration-token ${REGISTRATION_TOKEN} \
+  --executor "docker" \
+  --docker-network-mode ${GITLAB_NETWORK} \
+  --docker-image "docker:24.0.5" \
+  --docker-privileged \
+  --docker-volumes /var/run/docker.sock:/var/run/docker.sock \
+  --description "docker-runner dind" \
+  --tag-list "docker,dind"
+```
+### `.gitlab-ci.yml`
+```yaml
+default:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - echo "BEFORE scripts"
+    - docker info
+
+build-job:
+  stage: build
+  script:
+    - echo "Hello, $GITLAB_USER_LOGIN!"
+    - docker ps
+
+test-job1:
+  stage: test
+  script:
+    - echo "This job tests something"
+    - docker ps
+
+test-job2:
+  stage: test
+  script:
+    - echo "This job tests something, but takes more time than test-job1."
+    - echo "After the echo commands complete, it runs the sleep command for 20 seconds"
+    - echo "which simulates a test that runs 20 seconds longer than test-job1"
+    - docker ps
+    - sleep 20
+
+deploy-prod:
+  stage: deploy
+  script:
+    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
+    - docker ps
+  environment: production
+```
+## 2.4 Configure Runner
 * To enable the runner to run without tags :
   * From admin interface
-  * CICD > Runners > Select runner > edit > check : Run untagged jobs 
+  * CICD > Runners > Select runner > edit > check : **[Run untagged jobs]** 
 --------
 
 https://gitlab.com/omarpiotr/alpinehelloworld-ajc
