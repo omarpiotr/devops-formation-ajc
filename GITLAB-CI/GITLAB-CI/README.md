@@ -36,7 +36,7 @@ volumes:
 ## 2.1 Create a shell runner (on VM ubuntu server LTS)
 * Deprecated usage (use token instead of registration token)
 * Get the Registration token from :Gitlab web page > Admin > CICD > Runners : `${REGISTRATION_TOKEN}`
-* GitlabCI server web URL to call from the runner : `${GITLAB_URL}`
+* Gitlab-ce server web URL to call from the runner : `${GITLAB_URL}` *(ex http://mygitlab/ or http://mygitlab:8088/)*
 ```bash
 # Download the binary for your system
 sudo curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
@@ -71,8 +71,7 @@ Next values can ben changed :
 * check_interval = 1
 
 ### TROUBLESHOOTING 
-Prevent from `Job failed: prepare environment: exit status 1`
-
+Prevent from `Job failed: prepare environment: exit status 1` <br>
 comment code in `/home/gitlab-runner/.bash_logout`
 ```bash
 # ~/.bash_logout: executed by bash(1) when login shell exits.
@@ -114,11 +113,11 @@ deploy-prod:
 ## 2.2 Create a docker runner
 * Deprecated usage (use token instead of registration token)
 * Get the Registration token from :Gitlab web page > Admin > CICD > Runners : `${REGISTRATION_TOKEN}`
-* GitlabCI server web URL to call from the runner : `${GITLAB_URL}` (ex http://mygitlab:8088/)
-* Gitlab-ce docker network : `${GITLAB_NETWORK}` (ex: gitlabnet)
+* Gitlab-ce server web URL to call from the runner : `${GITLAB_URL}` *(ex http://mygitlab/)*
+* Gitlab-ce docker network : `${GITLAB_NETWORK}` *(ex: gitlabnet)*
 * Docker engine socket `${DOCKER_SOCK}`:
-  * //var/run/docker.sock (for windows)
-  * /var/run/docker.sock (for linux)
+  * **//var/run/docker.sock** *(for windows)*
+  * **/var/run/docker.sock** *(for linux)*
 ```bash
 # Pull the image of gitlab-runner
 docker pull gitlab/gitlab-runner:latest
@@ -175,11 +174,11 @@ deploy-prod:
 ## 2.3 Create a docker runner for docker operations(dind)
 * Deprecated usage (use token instead of registration token)
 * Get the Registration token from :Gitlab web page > Admin > CICD > Runners : `${REGISTRATION_TOKEN}`
-* GitlabCI server web URL to call from the runner : `${GITLAB_URL}` (ex http://mygitlab:8088/)
-* Gitlab-ce docker network : `${GITLAB_NETWORK}` (ex: gitlabnet)
+* GitlabCI server web URL to call from the runner : `${GITLAB_URL}` *(ex http://mygitlab/)*
+* Gitlab-ce docker network : `${GITLAB_NETWORK}` *(ex: gitlabnet)*
 * Docker engine socket `${DOCKER_SOCK}`:
-  * //var/run/docker.sock (for windows)
-  * /var/run/docker.sock (for linux)
+  * **//var/run/docker.sock** *(for windows)*
+  * **/var/run/docker.sock** *(for linux)*
 ```bash
 # Pull the image of gitlab-runner
 docker pull gitlab/gitlab-runner:latest
